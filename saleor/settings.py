@@ -126,7 +126,6 @@ EMAIL_URL =''
 # EMAIL_URL = os.environ.get("EMAIL_URL")
 SENDGRID_USERNAME = os.environ.get("SENDGRID_USERNAME")
 SENDGRID_PASSWORD = os.environ.get("SENDGRID_PASSWORD")
-print(SENDGRID_PASSWORD)
 if SENDGRID_USERNAME and SENDGRID_PASSWORD:
     EMAIL_URL = "smtp://%s:%s@smtp.sendgrid.net:587/?tls=True" % (
         SENDGRID_USERNAME,
@@ -210,7 +209,6 @@ TEMPLATES = [
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = os.environ.get("SECRET_KEY_saleor")
-# SECRET_KEY = "au*8)wn-@p^9o!tvl56e=@$%a=ub=z1yb@1mw8%ni70ch^b6*)%"
 
 MIDDLEWARE = [
     "saleor.core.middleware.django_session_middleware",
