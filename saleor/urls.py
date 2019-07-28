@@ -13,8 +13,8 @@ from .core.sitemaps import sitemaps
 from .core.urls import urlpatterns as core_urls
 from .dashboard.urls import urlpatterns as dashboard_urls
 from .data_feeds.urls import urlpatterns as feed_urls
-from .graphql.api import schema
-from .graphql.views import GraphQLView
+from .graphql_old.api import schema
+from .graphql_old.views import GraphQLView
 from .order.urls import urlpatterns as order_urls
 from .page.urls import urlpatterns as page_urls
 from .product.urls import urlpatterns as product_urls

@@ -1,6 +1,6 @@
 import graphene
 
-from ...graphql.core.enums import to_enum
+from ...graphql_old.core.enums import to_enum
 from ...payment import GATEWAYS_ENUM, ChargeStatus
 
 PaymentChargeStatusEnum = to_enum(ChargeStatus, type_name="PaymentChargeStatusEnum")

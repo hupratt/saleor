@@ -4,7 +4,7 @@ from typing import Union
 
 from prices import TaxedMoneyRange
 
-from saleor.graphql.core.types import MoneyRange
+from saleor.graphql_old.core.types import MoneyRange
 from saleor.product.models import Product, ProductVariant
 
 from ...core.utils import to_local_currency

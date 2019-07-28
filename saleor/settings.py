@@ -227,7 +227,7 @@ MIDDLEWARE = [
     "saleor.core.middleware.taxes",
     "saleor.core.middleware.social_auth_exception_middleware",
     "saleor.core.middleware.impersonate_middleware",
-    "saleor.graphql.middleware.jwt_middleware",
+    "saleor.graphql_old.middleware.jwt_middleware",
 ]
 
 INSTALLED_APPS = [
@@ -249,7 +249,7 @@ INSTALLED_APPS = [
     "saleor.product",
     "saleor.checkout",
     "saleor.core",
-    "saleor.graphql",
+    "saleor.graphql_old",
     "saleor.menu",
     "saleor.order",
     "saleor.dashboard",
