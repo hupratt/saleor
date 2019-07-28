@@ -56,18 +56,16 @@ CACHES = {"default": django_cache_url.config()}
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-if os.environ.get('DJANGO_DEVELOPMENT') is not None:
-    DATABASES = {
-        'default': {
-            'ENGINE': os.environ.get('enginedb'),
-            'NAME': 'saleor',
-            'USER': os.environ.get('dbuser'),
-            'PASSWORD': os.environ.get('dbpassword'),
-            'HOST': os.environ.get('hostipdev'), #hostipdev
-            'PORT': os.environ.get('pnumber'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': os.environ.get('enginedb'),
+        'NAME': 'saleor',
+        'USER': os.environ.get('dbuser'),
+        'PASSWORD': os.environ.get('dbpassword'),
+        'HOST': os.environ.get('hostipdev'), #hostipdev
+        'PORT': os.environ.get('pnumber'),
     }
-
+}
 
 
 TIME_ZONE = "America/Chicago"
@@ -410,7 +408,7 @@ bootstrap4 = {
 
 TEST_RUNNER = "tests.runner.PytestTestRunner"
 
-ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
+ALLOWED_HOSTS = "*"
 ALLOWED_GRAPHQL_ORIGINS = os.environ.get("ALLOWED_GRAPHQL_ORIGINS", "*")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
