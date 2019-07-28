@@ -10,15 +10,16 @@ import {
 import TextField from "@material-ui/core/TextField";
 import ArrowBack from "@material-ui/icons/ArrowBack";
 import Downshift from "downshift";
-import React from "react";
+import * as React from "react";
 
 import i18n from "../../i18n";
-import {
-  getMenuItemByPath,
-  IMenu,
-  validateMenuOptions
-} from "../../utils/menu";
 import Debounce, { DebounceProps } from "../Debounce";
+
+export interface SelectMenuItem {
+  children?: SelectMenuItem[];
+  label: React.ReactNode;
+  value?: string;
+}
 
 export interface AutocompleteSelectMenuProps {
   disabled: boolean;
@@ -28,15 +29,40 @@ export interface AutocompleteSelectMenuProps {
   label: string;
   loading: boolean;
   name: string;
-  options: IMenu;
+  options: SelectMenuItem[];
   placeholder: string;
   onChange: (event: React.ChangeEvent<any>) => void;
   onInputChange?: (value: string) => void;
 }
 
+function getOptionValues(option: SelectMenuItem): string[] {
+  return option.value
+    ? [option.value]
+    : option.children.reduce(
+        (acc, option) => [...acc, ...getOptionValues(option)],
+        []
+      );
+}
+
+export function validateOptions(options: SelectMenuItem[]): boolean {
+  const values: string[] = options.reduce(
+    (acc, option) => [...acc, ...getOptionValues(option)],
+    []
+  );
+  const uniqueValues = Array.from(new Set(values));
+  return uniqueValues.length === values.length;
+}
+
 const validationError: Error = new Error(
   "Values supplied to AutocompleteSelectMenu should be unique"
 );
+
+function getMenu(options: SelectMenuItem[], path: number[]): SelectMenuItem[] {
+  if (path.length === 0) {
+    return options;
+  }
+  return getMenu(options[path[0]].children, path.slice(1));
+}
 
 const DebounceAutocomplete: React.ComponentType<
   DebounceProps<string>
@@ -82,17 +108,18 @@ const AutocompleteSelectMenu = withStyles(styles, {
     const [inputValue, setInputValue] = React.useState(displayValue || "");
     const [menuPath, setMenuPath] = React.useState<number[]>([]);
 
-    const handleChange = (value: string) =>
+    const handleChange = (value: string) => {
       onChange({
         target: {
           name,
           value
         }
       } as any);
+    };
 
     // Validate if option values are duplicated
     React.useEffect(() => {
-      if (!validateMenuOptions(options)) {
+      if (!validateOptions(options)) {
         throw validationError;
       }
     }, []);
@@ -156,23 +183,22 @@ const AutocompleteSelectMenu = withStyles(styles, {
                               {i18n.t("Back")}
                             </MenuItem>
                           )}
-                          {(menuPath.length
-                            ? getMenuItemByPath(options, menuPath).children
-                            : options
-                          ).map((suggestion, index) => (
-                            <MenuItem
-                              key={suggestion.value}
-                              component="div"
-                              {...getItemProps({ item: suggestion })}
-                              onClick={() =>
-                                suggestion.value
-                                  ? selectItem(suggestion.value)
-                                  : setMenuPath([...menuPath, index])
-                              }
-                            >
-                              {suggestion.label}
-                            </MenuItem>
-                          ))}
+                          {getMenu(options, menuPath).map(
+                            (suggestion, index) => (
+                              <MenuItem
+                                key={suggestion.value}
+                                component="div"
+                                {...getItemProps({ item: suggestion })}
+                                onClick={() =>
+                                  suggestion.value
+                                    ? selectItem(suggestion.value)
+                                    : setMenuPath([...menuPath, index])
+                                }
+                              >
+                                {suggestion.label}
+                              </MenuItem>
+                            )
+                          )}
                         </>
                       ) : (
                         <MenuItem disabled component="div">

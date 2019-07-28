@@ -15,7 +15,6 @@ from prices import Money
 
 from saleor.account import events as account_events
 from saleor.account.models import Address, User
-from saleor.account.utils import get_random_avatar
 from saleor.checkout import AddressType
 from saleor.graphql.account.mutations import (
     CustomerDelete,
@@ -821,55 +820,6 @@ def test_customer_update_without_any_changes_generates_no_event(
     assert not account_events.CustomerEvent.objects.exists()
 
 
-ACCOUNT_UPDATE_QUERY = """
-    mutation accountUpdate(
-            $billing: AddressInput, $shipping: AddressInput, $firstName: String,
-            $lastName: String) {
-        accountUpdate(
-          input: {
-            defaultBillingAddress: $billing,
-            defaultShippingAddress: $shipping,
-            firstName: $firstName,
-            lastName: $lastName,
-        }) {
-            errors {
-                field
-                message
-            }
-            user {
-                firstName
-                lastName
-                email
-                defaultBillingAddress {
-                    id
-                }
-                defaultShippingAddress {
-                    id
-                }
-            }
-        }
-    }
-"""
-
-
-def test_logged_customer_update_names(user_api_client):
-    first_name = "first"
-    last_name = "last"
-    user = user_api_client.user
-    assert user.first_name != first_name
-    assert user.last_name != last_name
-
-    variables = {"firstName": first_name, "lastName": last_name}
-    response = user_api_client.post_graphql(ACCOUNT_UPDATE_QUERY, variables)
-    content = get_graphql_content(response)
-    data = content["data"]["accountUpdate"]
-
-    user.refresh_from_db()
-    assert not data["errors"]
-    assert user.first_name == first_name
-    assert user.last_name == last_name
-
-
 UPDATE_LOGGED_CUSTOMER_QUERY = """
     mutation UpdateLoggedCustomer($billing: AddressInput,
                                   $shipping: AddressInput) {
@@ -896,16 +846,7 @@ UPDATE_LOGGED_CUSTOMER_QUERY = """
 """
 
 
-@pytest.mark.parametrize(
-    "query, mutation_name",
-    [
-        (UPDATE_LOGGED_CUSTOMER_QUERY, "loggedUserUpdate"),
-        (ACCOUNT_UPDATE_QUERY, "accountUpdate"),
-    ],
-)
-def test_logged_customer_update_addresses(
-    user_api_client, graphql_address_data, query, mutation_name
-):
+def test_logged_customer_update(user_api_client, graphql_address_data):
     # this test requires addresses to be set and checks whether new address
     # instances weren't created, but the existing ones got updated
     user = user_api_client.user
@@ -915,9 +856,9 @@ def test_logged_customer_update_addresses(
     assert user.default_billing_address.first_name != new_first_name
     assert user.default_shipping_address.first_name != new_first_name
     variables = {"billing": graphql_address_data, "shipping": graphql_address_data}
-    response = user_api_client.post_graphql(query, variables)
+    response = user_api_client.post_graphql(UPDATE_LOGGED_CUSTOMER_QUERY, variables)
     content = get_graphql_content(response)
-    data = content["data"][mutation_name]
+    data = content["data"]["loggedUserUpdate"]
     assert not data["errors"]
 
     # check that existing instances are updated
@@ -931,49 +872,9 @@ def test_logged_customer_update_addresses(
     assert user.default_shipping_address.first_name == new_first_name
 
 
-@pytest.mark.parametrize(
-    "query", [(UPDATE_LOGGED_CUSTOMER_QUERY), (ACCOUNT_UPDATE_QUERY)]
-)
-def test_logged_customer_update_anonymous_user(api_client, query):
-    response = api_client.post_graphql(query, {})
+def test_logged_customer_update_anonymus_user(api_client):
+    response = api_client.post_graphql(UPDATE_LOGGED_CUSTOMER_QUERY, {})
     assert_no_permission(response)
-
-
-ACCOUNT_REQUEST_DELETION_QUERY = """
-    mutation accountRequestDeletion {
-        accountRequestDeletion {
-            errors {
-                field
-                message
-            }
-        }
-    }
-"""
-
-
-@patch("saleor.account.emails.send_account_delete_confirmation_email.delay")
-def test_account_request_deletion(
-    send_account_delete_confirmation_email_mock, user_api_client
-):
-    user = user_api_client.user
-
-    response = user_api_client.post_graphql(ACCOUNT_REQUEST_DELETION_QUERY)
-    content = get_graphql_content(response)
-    data = content["data"]["accountRequestDeletion"]
-
-    assert not data["errors"]
-    send_account_delete_confirmation_email_mock.assert_called_once_with(
-        str(user.token), user.email
-    )
-
-
-@patch("saleor.account.emails.send_account_delete_confirmation_email.delay")
-def test_account_request_deletion_anonymous_user(
-    send_account_delete_confirmation_email_mock, api_client
-):
-    response = api_client.post_graphql(ACCOUNT_REQUEST_DELETION_QUERY, {})
-    assert_no_permission(response)
-    send_account_delete_confirmation_email_mock.assert_not_called()
 
 
 @patch(
@@ -1027,7 +928,7 @@ def test_customer_delete_errors(customer_user, admin_user, staff_user):
     msg = "Cannot delete a staff account."
     assert e.value.error_dict["id"][0].message == msg
 
-    # should not raise any errors
+    # shuold not raise any errors
     CustomerDelete.clean_instance(info, customer_user)
 
 
@@ -1132,50 +1033,6 @@ def test_staff_update(staff_api_client, permission_manage_staff, media_root):
     assert not data["user"]["isActive"]
 
 
-@patch("saleor.graphql.account.mutations.get_random_avatar")
-def test_staff_update_doesnt_change_existing_avatar(
-    mock_get_random_avatar, staff_api_client, permission_manage_staff, media_root
-):
-    query = """
-    mutation UpdateStaff(
-            $id: ID!, $permissions: [PermissionEnum], $is_active: Boolean) {
-        staffUpdate(
-                id: $id,
-                input: {permissions: $permissions, isActive: $is_active}) {
-            errors {
-                field
-                message
-            }
-        }
-    }
-    """
-
-    mock_file = MagicMock(spec=File)
-    mock_file.name = "image.jpg"
-    mock_get_random_avatar.return_value = mock_file
-
-    staff_user = User.objects.create(email="staffuser@example.com", is_staff=True)
-
-    # Create random avatar
-    staff_user.avatar = get_random_avatar()
-    staff_user.save()
-    original_path = staff_user.avatar.path
-
-    id = graphene.Node.to_global_id("User", staff_user.id)
-    variables = {"id": id, "permissions": [], "is_active": False}
-    response = staff_api_client.post_graphql(
-        query, variables, permissions=[permission_manage_staff]
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["staffUpdate"]
-    assert data["errors"] == []
-
-    # Make sure that random avatar isn't recreated when there is one already set.
-    mock_get_random_avatar.assert_not_called()
-    staff_user.refresh_from_db()
-    assert staff_user.avatar.path == original_path
-
-
 def test_staff_delete(staff_api_client, permission_manage_staff):
     query = """
         mutation DeleteStaff($id: ID!) {
@@ -1226,7 +1083,7 @@ def test_staff_delete_errors(staff_user, customer_user, admin_user):
     msg = "Cannot delete a non-staff user."
     assert e.value.error_dict["id"][0].message == msg
 
-    # should not raise any errors
+    # shuold not raise any errors
     info = Mock(context=Mock(user=admin_user))
     StaffDelete.clean_instance(info, staff_user)
 
@@ -1244,7 +1101,7 @@ def test_staff_update_errors(staff_user, customer_user, admin_user):
     msg = "Cannot deactivate superuser's account."
     assert e.value.error_dict["is_active"][0].message == msg
 
-    # should not raise any errors
+    # shuold not raise any errors
     StaffUpdate.clean_is_active(False, customer_user, staff_user)
 
 

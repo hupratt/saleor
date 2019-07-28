@@ -1,12 +1,12 @@
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
-import React from "react";
+import * as React from "react";
 
-import AppHeader from "@saleor/components/AppHeader";
-import Container from "@saleor/components/Container";
-import PageHeader from "@saleor/components/PageHeader";
-import i18n from "@saleor/i18n";
-import { ListActions, PageListProps } from "@saleor/types";
+import AppHeader from "../../../components/AppHeader";
+import Container from "../../../components/Container";
+import PageHeader from "../../../components/PageHeader";
+import i18n from "../../../i18n";
+import { ListActions, PageListProps } from "../../../types";
 import { MenuList_menus_edges_node } from "../../types/MenuList";
 import MenuList from "../MenuList";
 

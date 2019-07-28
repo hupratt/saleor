@@ -1,6 +1,5 @@
 import json
 from datetime import datetime
-from decimal import Decimal
 from unittest.mock import Mock, patch
 
 import graphene
@@ -11,7 +10,6 @@ from django.utils.text import slugify
 from graphql_relay import to_global_id
 from prices import Money
 
-from saleor.core.taxes import TaxType, interface as tax_interface
 from saleor.graphql.core.enums import ReportingPeriod
 from saleor.graphql.product.enums import StockAvailability
 from saleor.graphql.product.types.products import resolve_attribute_list
@@ -102,6 +100,7 @@ def test_fetch_all_products(user_api_client, product):
     assert len(content["data"]["products"]["edges"]) == num_products
 
 
+@pytest.mark.djangodb
 def test_fetch_unavailable_products(user_api_client, product):
     Product.objects.update(is_published=False)
     query = """
@@ -664,25 +663,18 @@ def test_sort_products(user_api_client, product):
 
 
 def test_create_product(
-    staff_api_client,
-    product_type,
-    category,
-    size_attribute,
-    description_json,
-    description_raw,
-    permission_manage_products,
-    settings,
-    monkeypatch,
+    staff_api_client, product_type, category, size_attribute, permission_manage_products
 ):
     query = """
         mutation createProduct(
             $productTypeId: ID!,
             $categoryId: ID!,
             $name: String!,
+            $description: String!,
             $descriptionJson: JSONString!,
             $isPublished: Boolean!,
             $chargeTaxes: Boolean!,
-            $taxCode: String!,
+            $taxRate: TaxRateType!,
             $basePrice: Decimal!,
             $attributes: [AttributeValueInput!]) {
                 productCreate(
@@ -690,10 +682,11 @@ def test_create_product(
                         category: $categoryId,
                         productType: $productTypeId,
                         name: $name,
+                        description: $description,
                         descriptionJson: $descriptionJson,
                         isPublished: $isPublished,
                         chargeTaxes: $chargeTaxes,
-                        taxCode: $taxCode,
+                        taxRate: $taxRate,
                         basePrice: $basePrice,
                         attributes: $attributes
                     }) {
@@ -701,13 +694,11 @@ def test_create_product(
                             category {
                                 name
                             }
+                            description
                             descriptionJson
                             isPublished
                             chargeTaxes
-                            taxType {
-                                taxCode
-                                description
-                            }
+                            taxRate
                             name
                             basePrice {
                                 amount
@@ -732,23 +723,15 @@ def test_create_product(
                       }
     """
 
-    settings.USE_JSON_CONTENT = True
-
-    description_json = json.dumps(description_json)
-
     product_type_id = graphene.Node.to_global_id("ProductType", product_type.pk)
     category_id = graphene.Node.to_global_id("Category", category.pk)
+    product_description = "test description"
+    product_description_json = json.dumps({"content": "description"})
     product_name = "test name"
     product_is_published = True
     product_charge_taxes = True
     product_tax_rate = "STANDARD"
     product_price = 22.33
-
-    # Mock tax interface with fake response from tax gateway
-    monkeypatch.setattr(
-        "saleor.graphql.product.types.products.tax_interface.get_tax_from_object_meta",
-        lambda x: TaxType(description="", code=product_tax_rate),
-    )
 
     # Default attribute defined in product_type fixture
     color_attr = product_type.product_attributes.get(name="Color")
@@ -765,10 +748,11 @@ def test_create_product(
         "productTypeId": product_type_id,
         "categoryId": category_id,
         "name": product_name,
-        "descriptionJson": description_json,
+        "description": product_description,
+        "descriptionJson": product_description_json,
         "isPublished": product_is_published,
         "chargeTaxes": product_charge_taxes,
-        "taxCode": product_tax_rate,
+        "taxRate": product_tax_rate,
         "basePrice": product_price,
         "attributes": [
             {"slug": color_attr_slug, "value": color_value_slug},
@@ -783,10 +767,11 @@ def test_create_product(
     data = content["data"]["productCreate"]
     assert data["errors"] == []
     assert data["product"]["name"] == product_name
-    assert data["product"]["descriptionJson"] == description_json
+    assert data["product"]["description"] == product_description
+    assert data["product"]["descriptionJson"] == product_description_json
     assert data["product"]["isPublished"] == product_is_published
     assert data["product"]["chargeTaxes"] == product_charge_taxes
-    assert data["product"]["taxType"]["taxCode"] == product_tax_rate
+    assert data["product"]["taxRate"] == product_tax_rate
     assert data["product"]["productType"]["name"] == product_type.name
     assert data["product"]["category"]["name"] == category.name
     values = (
@@ -802,6 +787,7 @@ QUERY_CREATE_PRODUCT_WITHOUT_VARIANTS = """
         $productTypeId: ID!,
         $categoryId: ID!
         $name: String!,
+        $description: String!,
         $basePrice: Decimal!,
         $sku: String,
         $quantity: Int,
@@ -812,6 +798,7 @@ QUERY_CREATE_PRODUCT_WITHOUT_VARIANTS = """
                 category: $categoryId,
                 productType: $productTypeId,
                 name: $name,
+                description: $description,
                 basePrice: $basePrice,
                 sku: $sku,
                 quantity: $quantity,
@@ -852,6 +839,7 @@ def test_create_product_without_variants(
     product_type_id = graphene.Node.to_global_id("ProductType", product_type.pk)
     category_id = graphene.Node.to_global_id("Category", category.pk)
     product_name = "test name"
+    product_description = "description"
     product_price = 10
     sku = "sku"
     quantity = 1
@@ -861,6 +849,7 @@ def test_create_product_without_variants(
         "productTypeId": product_type_id,
         "categoryId": category_id,
         "name": product_name,
+        "description": product_description,
         "basePrice": product_price,
         "sku": sku,
         "quantity": quantity,
@@ -890,6 +879,7 @@ def test_create_product_without_variants_sku_validation(
     product_type_id = graphene.Node.to_global_id("ProductType", product_type.pk)
     category_id = graphene.Node.to_global_id("Category", category.pk)
     product_name = "test name"
+    product_description = "description"
     product_price = 10
     quantity = 1
     track_inventory = True
@@ -898,6 +888,7 @@ def test_create_product_without_variants_sku_validation(
         "productTypeId": product_type_id,
         "categoryId": category_id,
         "name": product_name,
+        "description": product_description,
         "basePrice": product_price,
         "sku": None,
         "quantity": quantity,
@@ -926,6 +917,7 @@ def test_create_product_without_variants_sku_duplication(
     product_type_id = graphene.Node.to_global_id("ProductType", product_type.pk)
     category_id = graphene.Node.to_global_id("Category", category.pk)
     product_name = "test name"
+    product_description = "description"
     product_price = 10
     quantity = 1
     track_inventory = True
@@ -935,6 +927,7 @@ def test_create_product_without_variants_sku_duplication(
         "productTypeId": product_type_id,
         "categoryId": category_id,
         "name": product_name,
+        "description": product_description,
         "basePrice": product_price,
         "sku": sku,
         "quantity": quantity,
@@ -986,21 +979,17 @@ def test_update_product(
     category,
     non_default_category,
     product,
-    other_description_json,
-    other_description_raw,
     permission_manage_products,
-    settings,
-    monkeypatch,
 ):
     query = """
         mutation updateProduct(
             $productId: ID!,
             $categoryId: ID!,
             $name: String!,
-            $descriptionJson: JSONString!,
+            $description: String!,
             $isPublished: Boolean!,
             $chargeTaxes: Boolean!,
-            $taxCode: String!,
+            $taxRate: TaxRateType!,
             $basePrice: Decimal!,
             $attributes: [AttributeValueInput!]) {
                 productUpdate(
@@ -1008,10 +997,10 @@ def test_update_product(
                     input: {
                         category: $categoryId,
                         name: $name,
-                        descriptionJson: $descriptionJson,
+                        description: $description,
                         isPublished: $isPublished,
                         chargeTaxes: $chargeTaxes,
-                        taxCode: $taxCode,
+                        taxRate: $taxRate,
                         basePrice: $basePrice,
                         attributes: $attributes
                     }) {
@@ -1019,13 +1008,10 @@ def test_update_product(
                             category {
                                 name
                             }
-                            descriptionJson
+                            description
                             isPublished
                             chargeTaxes
-                            taxType {
-                                taxCode
-                                description
-                            }
+                            taxRate
                             name
                             basePrice {
                                 amount
@@ -1049,33 +1035,23 @@ def test_update_product(
                         }
                       }
     """
-
-    settings.USE_JSON_CONTENT = True
-
-    other_description_json = json.dumps(other_description_json)
-
     product_id = graphene.Node.to_global_id("Product", product.pk)
     category_id = graphene.Node.to_global_id("Category", non_default_category.pk)
+    product_description = "updated description"
     product_name = "updated name"
-    product_is_published = True
-    product_charge_taxes = True
-    product_tax_rate = "STANDARD"
+    product_isPublished = True
+    product_chargeTaxes = True
+    product_taxRate = "STANDARD"
     product_price = "33.12"
-
-    # Mock tax interface with fake response from tax gateway
-    monkeypatch.setattr(
-        "saleor.graphql.product.types.products.tax_interface.get_tax_from_object_meta",
-        lambda x: TaxType(description="", code=product_tax_rate),
-    )
 
     variables = {
         "productId": product_id,
         "categoryId": category_id,
         "name": product_name,
-        "descriptionJson": other_description_json,
-        "isPublished": product_is_published,
-        "chargeTaxes": product_charge_taxes,
-        "taxCode": product_tax_rate,
+        "description": product_description,
+        "isPublished": product_isPublished,
+        "chargeTaxes": product_chargeTaxes,
+        "taxRate": product_taxRate,
         "basePrice": product_price,
     }
 
@@ -1086,10 +1062,10 @@ def test_update_product(
     data = content["data"]["productUpdate"]
     assert data["errors"] == []
     assert data["product"]["name"] == product_name
-    assert data["product"]["descriptionJson"] == other_description_json
-    assert data["product"]["isPublished"] == product_is_published
-    assert data["product"]["chargeTaxes"] == product_charge_taxes
-    assert data["product"]["taxType"]["taxCode"] == product_tax_rate
+    assert data["product"]["description"] == product_description
+    assert data["product"]["isPublished"] == product_isPublished
+    assert data["product"]["chargeTaxes"] == product_chargeTaxes
+    assert data["product"]["taxRate"] == product_taxRate
     assert not data["product"]["category"]["name"] == category.name
 
 
@@ -1101,7 +1077,8 @@ def test_update_product_without_variants(
         $productId: ID!,
         $sku: String,
         $quantity: Int,
-        $trackInventory: Boolean)
+        $trackInventory: Boolean,
+        $description: String)
     {
         productUpdate(
             id: $productId,
@@ -1109,6 +1086,7 @@ def test_update_product_without_variants(
                 sku: $sku,
                 quantity: $quantity,
                 trackInventory: $trackInventory,
+                description: $description
             })
         {
             product {
@@ -1133,12 +1111,14 @@ def test_update_product_without_variants(
     product_sku = "test_sku"
     product_quantity = 10
     product_track_inventory = False
+    product_description = "test description"
 
     variables = {
         "productId": product_id,
         "sku": product_sku,
         "quantity": product_quantity,
         "trackInventory": product_track_inventory,
+        "description": product_description,
     }
 
     response = staff_api_client.post_graphql(
@@ -1249,23 +1229,8 @@ def test_product_type(user_api_client, product_type):
 
 
 def test_product_type_query(
-    user_api_client,
-    staff_api_client,
-    product_type,
-    product,
-    permission_manage_products,
-    monkeypatch,
+    user_api_client, staff_api_client, product_type, product, permission_manage_products
 ):
-    monkeypatch.setattr(
-        "saleor.graphql.product.types.products."
-        "vatlayer_interface.get_tax_from_object_meta",
-        lambda x: TaxType(code="standard", description=""),
-    )
-    monkeypatch.setattr(
-        "saleor.graphql.product.types.products."
-        "tax_interface.get_tax_from_object_meta",
-        lambda x: TaxType(code="123", description="Standard Taxes"),
-    )
     query = """
             query getProductType($id: ID!) {
                 productType(id: $id) {
@@ -1279,10 +1244,6 @@ def test_product_type_query(
                         }
                     }
                     taxRate
-                    taxType {
-                        taxCode
-                        description
-                    }
                 }
             }
         """
@@ -1301,24 +1262,16 @@ def test_product_type_query(
     content = get_graphql_content(response)
     data = content["data"]
     assert data["productType"]["products"]["totalCount"] == no_products
-    assert data["productType"]["taxRate"] == "STANDARD"
-    assert data["productType"]["taxType"]["taxCode"] == "123"
-    assert data["productType"]["taxType"]["description"] == "Standard Taxes"
+    assert data["productType"]["taxRate"] == product_type.tax_rate.upper()
 
 
 def test_product_type_create_mutation(
-    staff_api_client, product_type, permission_manage_products, monkeypatch, settings
+    staff_api_client, product_type, permission_manage_products
 ):
-    settings.VATLAYER_ACCESS_KEY = "test"
-    monkeypatch.setattr(
-        "saleor.graphql.product.types.products."
-        "vatlayer_interface.get_tax_from_object_meta",
-        lambda x: TaxType(code="standard", description=""),
-    )
     query = """
     mutation createProductType(
         $name: String!,
-        $taxCode: String!,
+        $taxRate: TaxRateType!,
         $hasVariants: Boolean!,
         $isShippingRequired: Boolean!,
         $productAttributes: [ID],
@@ -1326,7 +1279,7 @@ def test_product_type_create_mutation(
         productTypeCreate(
             input: {
                 name: $name,
-                taxCode: $taxCode,
+                taxRate: $taxRate,
                 hasVariants: $hasVariants,
                 isShippingRequired: $isShippingRequired,
                 productAttributes: $productAttributes,
@@ -1367,7 +1320,7 @@ def test_product_type_create_mutation(
     variables = {
         "name": product_type_name,
         "hasVariants": has_variants,
-        "taxCode": "STANDARD",
+        "taxRate": "STANDARD",
         "isShippingRequired": require_shipping,
         "productAttributes": product_attributes_ids,
         "variantAttributes": variant_attributes_ids,
@@ -1398,8 +1351,7 @@ def test_product_type_create_mutation(
     )
 
     new_instance = ProductType.objects.latest("pk")
-    tax_code = tax_interface.get_tax_from_object_meta(new_instance).code
-    assert tax_code == "standard"
+    assert new_instance.tax_rate == "standard"
 
 
 def test_product_type_update_mutation(
@@ -1992,14 +1944,18 @@ def test_report_product_sales(
     node_a = edges[0]["node"]
     line_a = order_with_lines.lines.get(product_sku=node_a["sku"])
     assert node_a["quantityOrdered"] == line_a.quantity
-    amount = str(node_a["revenue"]["gross"]["amount"])
-    assert Decimal(amount) == line_a.quantity * line_a.unit_price_gross.amount
+    assert (
+        node_a["revenue"]["gross"]["amount"]
+        == line_a.quantity * line_a.unit_price_gross.amount
+    )
 
     node_b = edges[1]["node"]
     line_b = order_with_lines.lines.get(product_sku=node_b["sku"])
     assert node_b["quantityOrdered"] == line_b.quantity
-    amount = str(node_b["revenue"]["gross"]["amount"])
-    assert Decimal(amount) == line_b.quantity * line_b.unit_price_gross.amount
+    assert (
+        node_b["revenue"]["gross"]["amount"]
+        == line_b.quantity * line_b.unit_price_gross.amount
+    )
 
 
 def test_variant_revenue_permissions(

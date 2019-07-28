@@ -2,19 +2,15 @@ import Button from "@material-ui/core/Button";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
+import * as React from "react";
 
-import ActionDialog from "@saleor/components/ActionDialog";
-import useBulkActions from "@saleor/hooks/useBulkActions";
-import useListSettings from "@saleor/hooks/useListSettings";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
-import usePaginator, {
-  createPaginationState
-} from "@saleor/hooks/usePaginator";
-import i18n from "@saleor/i18n";
-import { getMutationState, maybe } from "@saleor/misc";
-import { ListViews } from "@saleor/types";
+import ActionDialog from "../../components/ActionDialog";
+import useBulkActions from "../../hooks/useBulkActions";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
+import usePaginator, { createPaginationState } from "../../hooks/usePaginator";
+import i18n from "../../i18n";
+import { getMutationState, maybe } from "../../misc";
 import CollectionListPage from "../components/CollectionListPage/CollectionListPage";
 import {
   TypedCollectionBulkDelete,
@@ -35,6 +31,8 @@ interface CollectionListProps {
   params: CollectionListUrlQueryParams;
 }
 
+const PAGINATE_BY = 20;
+
 export const CollectionList: React.StatelessComponent<CollectionListProps> = ({
   params
 }) => {
@@ -43,9 +41,6 @@ export const CollectionList: React.StatelessComponent<CollectionListProps> = ({
   const paginate = usePaginator();
   const { isSelected, listElements, reset, toggle, toggleAll } = useBulkActions(
     params.ids
-  );
-  const { updateListSettings, settings } = useListSettings(
-    ListViews.COLLECTION_LIST
   );
 
   const closeModal = () =>
@@ -66,7 +61,7 @@ export const CollectionList: React.StatelessComponent<CollectionListProps> = ({
       })
     );
 
-  const paginationState = createPaginationState(settings.rowNumber, params);
+  const paginationState = createPaginationState(PAGINATE_BY, params);
   return (
     <TypedCollectionListQuery displayLoader variables={paginationState}>
       {({ data, loading, refetch }) => {
@@ -133,10 +128,8 @@ export const CollectionList: React.StatelessComponent<CollectionListProps> = ({
                         collections={maybe(() =>
                           data.collections.edges.map(edge => edge.node)
                         )}
-                        settings={settings}
                         onNextPage={loadNextPage}
                         onPreviousPage={loadPreviousPage}
-                        onUpdateListSettings={updateListSettings}
                         pageInfo={pageInfo}
                         onRowClick={id => () => navigate(collectionUrl(id))}
                         toolbar={

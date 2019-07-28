@@ -1,8 +1,8 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
-import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
-import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import { ConfirmButtonTransitionState } from "../../../components/ConfirmButton/ConfirmButton";
+import SaveButtonBar from "../../../components/SaveButtonBar";
 import Decorator from "../../Decorator";
 
 const props = {

@@ -13,13 +13,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
+import * as React from "react";
 
-import CardTitle from "@saleor/components/CardTitle";
-import Checkbox from "@saleor/components/Checkbox";
-import Skeleton from "@saleor/components/Skeleton";
-import TableHead from "@saleor/components/TableHead";
-import TablePagination from "@saleor/components/TablePagination";
+import CardTitle from "../../../components/CardTitle";
+import Checkbox from "../../../components/Checkbox";
+import Skeleton from "../../../components/Skeleton";
+import TableHead from "../../../components/TableHead";
+import TablePagination from "../../../components/TablePagination";
 import i18n from "../../../i18n";
 import { maybe, renderCollection } from "../../../misc";
 import { ListActions, ListProps } from "../../../types";
@@ -71,7 +71,9 @@ const DiscountCategories = withStyles(styles, {
   }: DiscountCategoriesProps & WithStyles<typeof styles>) => (
     <Card>
       <CardTitle
-        title={i18n.t("Eligible Categories")}
+        title={i18n.t("Categories assigned to {{ saleName }}", {
+          saleName: maybe(() => sale.name)
+        })}
         toolbar={
           <Button color="primary" onClick={onCategoryAssign}>
             {i18n.t("Assign categories")}
@@ -87,6 +89,7 @@ const DiscountCategories = withStyles(styles, {
           toolbar={toolbar}
         >
           <>
+            <TableCell />
             <TableCell className={classes.wideColumn}>
               {i18n.t("Category name")}
             </TableCell>
@@ -127,7 +130,10 @@ const DiscountCategories = withStyles(styles, {
                     <Checkbox
                       checked={isSelected}
                       disabled={disabled}
-                      onChange={() => toggle(category.id)}
+                      onClick={event => {
+                        toggle(category.id);
+                        event.stopPropagation();
+                      }}
                     />
                   </TableCell>
                   <TableCell>

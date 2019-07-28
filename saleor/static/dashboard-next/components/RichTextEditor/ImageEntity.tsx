@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { ContentState } from "draft-js";
-import React from "react";
+import * as React from "react";
 
 import i18n from "../../i18n";
 

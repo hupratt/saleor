@@ -6,7 +6,7 @@ import {
 } from "@material-ui/core/styles";
 import Tab from "@material-ui/core/Tab";
 import classNames from "classnames";
-import React from "react";
+import * as React from "react";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -20,8 +20,7 @@ const styles = (theme: Theme) =>
         color: theme.typography.body2.color
       },
       color: theme.typography.caption.color,
-      fontSize: "1rem",
-      fontWeight: 400
+      fontSize: "0.875rem"
     },
     tabRoot: {
       minWidth: "80px",

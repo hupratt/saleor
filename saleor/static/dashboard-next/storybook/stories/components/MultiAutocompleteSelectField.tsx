@@ -2,12 +2,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Close";
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
-import Form from "@saleor/components/Form";
+import Form from "../../../components/Form";
 import MultiAutocompleteSelectField, {
   MultiAutocompleteSelectFieldChildrenFunc
-} from "@saleor/components/MultiAutocompleteSelectField";
+} from "../../../components/MultiAutocompleteSelectField";
 import CardDecorator from "../../CardDecorator";
 import Decorator from "../../Decorator";
 import { ChoiceProvider } from "../../mock";

@@ -1,39 +1,32 @@
-import React from "react";
+import * as React from "react";
 
-import AppHeader from "@saleor/components/AppHeader";
-import CardSpacer from "@saleor/components/CardSpacer";
-import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
-import Container from "@saleor/components/Container";
-import Form from "@saleor/components/Form";
-import Grid from "@saleor/components/Grid";
-import PageHeader from "@saleor/components/PageHeader";
-import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import AppHeader from "../../../components/AppHeader";
+import CardSpacer from "../../../components/CardSpacer";
+import { ConfirmButtonTransitionState } from "../../../components/ConfirmButton";
+import Container from "../../../components/Container";
+import Form from "../../../components/Form";
+import Grid from "../../../components/Grid";
+import PageHeader from "../../../components/PageHeader";
+import SaveButtonBar from "../../../components/SaveButtonBar";
 import i18n from "../../../i18n";
 import { UserError } from "../../../types";
 import {
-  DiscountValueTypeEnum,
-  VoucherTypeEnum
+  VoucherDiscountValueType,
+  VoucherType
 } from "../../../types/globalTypes";
-import VoucherDates from "../VoucherDates";
 import VoucherInfo from "../VoucherInfo";
-import VoucherLimits from "../VoucherLimits";
-import VoucherRequirements from "../VoucherRequirements";
-import VoucherTypes from "../VoucherTypes";
+import VoucherOptions from "../VoucherOptions";
 
-import VoucherValue from "../VoucherValue";
 export interface FormData {
   applyOncePerOrder: boolean;
   code: string;
-  discountType: DiscountValueTypeEnum;
+  discountType: VoucherDiscountValueType;
   endDate: string;
-  endTime: string;
-  hasEndDate: boolean;
-  hasUsageLimit: boolean;
-  minAmountSpent: string;
+  minAmountSpent: number;
+  name: string;
   startDate: string;
-  startTime: string;
-  type: VoucherTypeEnum;
-  usageLimit: string;
+  type: VoucherType;
+  usageLimit: number;
   value: number;
 }
 
@@ -57,16 +50,13 @@ const VoucherCreatePage: React.StatelessComponent<VoucherCreatePageProps> = ({
   const initialForm: FormData = {
     applyOncePerOrder: false,
     code: "",
-    discountType: DiscountValueTypeEnum.FIXED,
+    discountType: VoucherDiscountValueType.FIXED,
     endDate: "",
-    endTime: "",
-    hasEndDate: false,
-    hasUsageLimit: false,
-    minAmountSpent: "0",
+    minAmountSpent: 0,
+    name: "",
     startDate: "",
-    startTime: "",
-    type: VoucherTypeEnum.ENTIRE_ORDER,
-    usageLimit: "0",
+    type: VoucherType.VALUE,
+    usageLimit: 0,
     value: 0
   };
 
@@ -82,28 +72,11 @@ const VoucherCreatePage: React.StatelessComponent<VoucherCreatePageProps> = ({
                 data={data}
                 errors={formErrors}
                 disabled={disabled}
-                onChange={change}
                 variant="create"
-              />
-              <CardSpacer />
-              <VoucherTypes
-                data={data}
-                disabled={disabled}
-                errors={formErrors}
                 onChange={change}
               />
-              {data.discountType.toString() !== "SHIPPING" ? (
-                <VoucherValue
-                  data={data}
-                  disabled={disabled}
-                  defaultCurrency={defaultCurrency}
-                  errors={formErrors}
-                  onChange={change}
-                  variant="create"
-                />
-              ) : null}
               <CardSpacer />
-              <VoucherRequirements
+              <VoucherOptions
                 data={data}
                 disabled={disabled}
                 defaultCurrency={defaultCurrency}
@@ -111,21 +84,6 @@ const VoucherCreatePage: React.StatelessComponent<VoucherCreatePageProps> = ({
                 onChange={change}
               />
               <CardSpacer />
-              <VoucherLimits
-                data={data}
-                disabled={disabled}
-                defaultCurrency={defaultCurrency}
-                errors={formErrors}
-                onChange={change}
-              />
-              <CardSpacer />
-              <VoucherDates
-                data={data}
-                disabled={disabled}
-                defaultCurrency={defaultCurrency}
-                errors={formErrors}
-                onChange={change}
-              />
             </div>
           </Grid>
           <SaveButtonBar

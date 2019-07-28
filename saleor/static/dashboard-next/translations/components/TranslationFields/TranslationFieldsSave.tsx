@@ -5,11 +5,11 @@ import {
   withStyles,
   WithStyles
 } from "@material-ui/core/styles";
-import React from "react";
+import * as React from "react";
 
 import ConfirmButton, {
   ConfirmButtonTransitionState
-} from "@saleor/components/ConfirmButton";
+} from "../../../components/ConfirmButton";
 import i18n from "../../../i18n";
 
 interface TranslationFieldsSaveProps {

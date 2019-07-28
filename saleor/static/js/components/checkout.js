@@ -40,11 +40,10 @@ export default $(document).ready((e) => {
   });
   $('.product-form button').click((e) => {
     e.preventDefault();
-    let $target = $(e.target.form);
-    let quantity = $target.find('input[name="quantity"]').val();
-    let variant = $target.find('input[name="variant"]').val();
+    let quantity = $('#id_quantity').val();
+    let variant = $('#id_variant').val();
     $.ajax({
-      url: $target.attr('action'),
+      url: $('.product-form').attr('action'),
       type: 'POST',
       data: {
         variant: variant,

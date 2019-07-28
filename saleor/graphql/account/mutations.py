@@ -23,13 +23,7 @@ from ..account.enums import AddressTypeEnum
 from ..account.i18n import I18nMixin
 from ..account.types import Address, AddressInput, User
 from ..core.enums import PermissionEnum
-from ..core.mutations import (
-    BaseMutation,
-    ClearMetaBaseMutation,
-    ModelDeleteMutation,
-    ModelMutation,
-    UpdateMetaBaseMutation,
-)
+from ..core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
 from ..core.types import Upload
 from ..core.utils import validate_image_file
 from .utils import CustomerDeleteMixin, StaffDeleteMixin, UserDeleteMixin
@@ -119,17 +113,6 @@ class StaffInput(UserInput):
     permissions = graphene.List(
         PermissionEnum,
         description="List of permission code names to assign to this user.",
-    )
-
-
-class AccountInput(graphene.InputObjectType):
-    first_name = graphene.String(description="Given name.")
-    last_name = graphene.String(description="Family name.")
-    default_billing_address = AddressInput(
-        description="Billing address of the customer."
-    )
-    default_shipping_address = AddressInput(
-        description="Shipping address of the customer."
     )
 
 
@@ -262,10 +245,7 @@ class LoggedUserUpdate(CustomerCreate):
         )
 
     class Meta:
-        description = (
-            "DEPRECATED: Use AccountUpdate instead. "
-            "Updates data of the logged in user."
-        )
+        description = "Updates data of the logged in user."
         exclude = ["password"]
         model = models.User
 
@@ -278,46 +258,6 @@ class LoggedUserUpdate(CustomerCreate):
         user = info.context.user
         data["id"] = graphene.Node.to_global_id("User", user.id)
         return super().perform_mutation(root, info, **data)
-
-
-class AccountUpdate(CustomerCreate):
-    class Arguments:
-        input = AccountInput(
-            description="Fields required to update the account of the logged-in user.",
-            required=True,
-        )
-
-    class Meta:
-        description = "Updates the account of the logged-in user."
-        exclude = ["password"]
-        model = models.User
-
-    @classmethod
-    def check_permissions(cls, user):
-        return user.is_authenticated
-
-    @classmethod
-    def perform_mutation(cls, root, info, **data):
-        user = info.context.user
-        data["id"] = graphene.Node.to_global_id("User", user.id)
-        return super().perform_mutation(root, info, **data)
-
-
-class AccountRequestDeletion(BaseMutation):
-    class Meta:
-        description = (
-            "Sends an email with the account removal link for the logged-in user."
-        )
-
-    @classmethod
-    def check_permissions(cls, user):
-        return user.is_authenticated
-
-    @classmethod
-    def perform_mutation(cls, root, info, **data):
-        user = info.context.user
-        emails.send_account_delete_confirmation_email.delay(str(user.token), user.email)
-        return AccountRequestDeletion()
 
 
 class UserDelete(UserDeleteMixin, ModelDeleteMutation):
@@ -368,12 +308,9 @@ class StaffCreate(ModelMutation):
 
     @classmethod
     def save(cls, info, user, cleaned_input):
-        create_avatar = not user.avatar
-        if create_avatar:
-            user.avatar = get_random_avatar()
+        user.avatar = get_random_avatar()
         user.save()
-        if create_avatar:
-            create_user_avatar_thumbnails.delay(user_id=user.pk)
+        create_user_avatar_thumbnails.delay(user_id=user.pk)
         if cleaned_input.get("send_password_email"):
             send_set_password_staff_email.delay(user.pk)
 
@@ -792,33 +729,3 @@ class UserAvatarDelete(BaseMutation):
         user.avatar.delete_sized_images()
         user.avatar.delete()
         return UserAvatarDelete(user=user)
-
-
-class UserUpdateMeta(UpdateMetaBaseMutation):
-    class Meta:
-        description = "Updates metadata for user."
-        model = models.User
-        public = True
-
-
-class UserUpdatePrivateMeta(UpdateMetaBaseMutation):
-    class Meta:
-        description = "Updates private metadata for user."
-        permissions = ("account.manage_users",)
-        model = models.User
-        public = False
-
-
-class UserClearStoredMeta(ClearMetaBaseMutation):
-    class Meta:
-        description = "Clear stored metadata value."
-        model = models.User
-        public = True
-
-
-class UserClearStoredPrivateMeta(ClearMetaBaseMutation):
-    class Meta:
-        description = "Clear stored metadata value."
-        model = models.User
-        permissions = ("account.manage_users",)
-        public = False

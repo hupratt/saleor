@@ -2,15 +2,11 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+import { TaxRateType } from "./../../types/globalTypes";
+
 // ====================================================
 // GraphQL query operation: ProductTypeList
 // ====================================================
-
-export interface ProductTypeList_productTypes_edges_node_taxType {
-  __typename: "TaxType";
-  description: string | null;
-  taxCode: string | null;
-}
 
 export interface ProductTypeList_productTypes_edges_node {
   __typename: "ProductType";
@@ -18,7 +14,7 @@ export interface ProductTypeList_productTypes_edges_node {
   name: string;
   hasVariants: boolean;
   isShippingRequired: boolean;
-  taxType: ProductTypeList_productTypes_edges_node_taxType | null;
+  taxRate: TaxRateType | null;
 }
 
 export interface ProductTypeList_productTypes_edges {

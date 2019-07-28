@@ -2,6 +2,7 @@ import {
   ProductCreateData_productTypes_edges_node,
   ProductCreateData_productTypes_edges_node_productAttributes
 } from "../products/types/ProductCreateData";
+import { TaxRateType } from "../types/globalTypes";
 import { ProductTypeDetails_productType } from "./types/ProductTypeDetails";
 import { ProductTypeList_productTypes_edges_node } from "./types/ProductTypeList";
 
@@ -454,11 +455,7 @@ export const productTypes: Array<
     isShippingRequired: true,
     name: "Candy",
     productAttributes: [attributes[0]],
-    taxType: {
-      __typename: "TaxType" as "TaxType",
-      description: "PB100000",
-      taxCode: "Books / Manuals"
-    },
+    taxRate: "FOODSTUFFS" as TaxRateType,
     variantAttributes: [attributes[1], attributes[2]]
   },
   {
@@ -468,11 +465,7 @@ export const productTypes: Array<
     isShippingRequired: false,
     name: "E-books",
     productAttributes: [attributes[5]],
-    taxType: {
-      __typename: "TaxType" as "TaxType",
-      description: "PH403682",
-      taxCode: "Holters"
-    },
+    taxRate: "STANDARD" as TaxRateType,
     variantAttributes: [attributes[0], attributes[3]]
   },
   {
@@ -482,11 +475,7 @@ export const productTypes: Array<
     isShippingRequired: true,
     name: "Mugs",
     productAttributes: [attributes[7]],
-    taxType: {
-      __typename: "TaxType" as "TaxType",
-      description: "PC077426",
-      taxCode: "Cabling"
-    },
+    taxRate: "STANDARD" as TaxRateType,
     variantAttributes: [attributes[2], attributes[5]]
   },
   {
@@ -496,11 +485,7 @@ export const productTypes: Array<
     isShippingRequired: true,
     name: "Coffee",
     productAttributes: [attributes[8]],
-    taxType: {
-      __typename: "TaxType" as "TaxType",
-      description: "PB100000",
-      taxCode: "Books / Manuals"
-    },
+    taxRate: "STANDARD" as TaxRateType,
     variantAttributes: [attributes[1], attributes[4]]
   },
   {
@@ -510,11 +495,7 @@ export const productTypes: Array<
     isShippingRequired: true,
     name: "T-Shirt",
     productAttributes: [attributes[4]],
-    taxType: {
-      __typename: "TaxType" as "TaxType",
-      description: "PH403970",
-      taxCode: "Wheelchair"
-    },
+    taxRate: "STANDARD" as TaxRateType,
     variantAttributes: [attributes[1], attributes[6]]
   }
 ].map(productType => ({
@@ -589,12 +570,8 @@ export const productType: ProductTypeDetails_productType = {
       ]
     }
   ],
-  taxType: {
-    __typename: "TaxType" as "TaxType",
-    description: "PH405458",
-    taxCode: "Shields"
-  },
-  variantAttributes: [attributes[1], attributes[6]],
+  taxRate: "STANDARD" as TaxRateType,
+  variantAttributes: [],
   weight: {
     __typename: "Weight",
     unit: "kg",

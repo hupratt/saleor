@@ -1,43 +1,83 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
-import placeholderImage from "../../../../images/placeholder255x255.png";
+import * as placeholderImage from "../../../../images/placeholder255x255.png";
 import { category as categoryFixture } from "../../../categories/fixtures";
-import {
-  filterPageProps,
-  filters,
-  listActionsProps,
-  pageListProps
-} from "../../../fixtures";
-import ProductListCard, {
-  ProductListCardProps
-} from "../../../products/components/ProductListCard";
+import { Filter } from "../../../components/TableFilter";
+import { listActionsProps, pageListProps } from "../../../fixtures";
+import ProductListCard from "../../../products/components/ProductListCard";
 import Decorator from "../../Decorator";
 
 const products = categoryFixture(placeholderImage).products.edges.map(
   edge => edge.node
 );
 
-const props: ProductListCardProps = {
-  ...listActionsProps,
-  ...pageListProps.default,
-  ...filterPageProps,
-  products
-};
+const filtersList: Filter[] = [
+  {
+    label: "Gardner-Schultz",
+    onClick: () => undefined
+  },
+  {
+    label: "Davis, Brown and Ray",
+    onClick: () => undefined
+  },
+  {
+    label: "Franklin Inc",
+    onClick: () => undefined
+  }
+];
 
 storiesOf("Views / Products / Product list", module)
   .addDecorator(Decorator)
-  .add("default", () => <ProductListCard {...props} />)
+  .add("default", () => (
+    <ProductListCard
+      filtersList={[]}
+      currentTab="all"
+      products={products}
+      {...listActionsProps}
+      {...pageListProps.default}
+      onAllProducts={() => undefined}
+      onAvailable={() => undefined}
+      onOfStock={() => undefined}
+      onCustomFilter={() => undefined}
+    />
+  ))
   .add("with custom filters", () => (
-    <ProductListCard {...props} filtersList={filters} />
+    <ProductListCard
+      products={products}
+      {...listActionsProps}
+      {...pageListProps.default}
+      filtersList={filtersList}
+      currentTab="custom"
+      onAllProducts={() => undefined}
+      onAvailable={() => undefined}
+      onOfStock={() => undefined}
+      onCustomFilter={() => undefined}
+    />
   ))
   .add("loading", () => (
     <ProductListCard
-      {...props}
+      {...listActionsProps}
+      {...pageListProps.loading}
       products={undefined}
       filtersList={undefined}
       currentTab={undefined}
-      disabled={true}
+      onAllProducts={() => undefined}
+      onAvailable={() => undefined}
+      onOfStock={() => undefined}
+      onCustomFilter={() => undefined}
     />
   ))
-  .add("no data", () => <ProductListCard {...props} products={[]} />);
+  .add("no data", () => (
+    <ProductListCard
+      products={[]}
+      {...listActionsProps}
+      {...pageListProps.default}
+      filtersList={[]}
+      currentTab="all"
+      onAllProducts={() => undefined}
+      onAvailable={() => undefined}
+      onOfStock={() => undefined}
+      onCustomFilter={() => undefined}
+    />
+  ));

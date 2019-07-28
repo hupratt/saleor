@@ -11,10 +11,8 @@ from django.utils.encoding import smart_str
 from django_prices.models import MoneyField
 
 from ..account.models import Address
-from ..core.models import ModelWithMetadata
-from ..core.taxes import zero_money
+from ..core.utils.taxes import ZERO_TAXED_MONEY, zero_money
 from ..core.weight import zero_weight
-from ..giftcard.models import GiftCard
 from ..shipping.models import ShippingMethod
 
 CENTS = Decimal("0.01")
@@ -37,7 +35,7 @@ class CheckoutQueryset(models.QuerySet):
         )  # noqa
 
 
-class Checkout(ModelWithMetadata):
+class Checkout(models.Model):
     """A shopping checkout."""
 
     created = models.DateTimeField(auto_now_add=True)
@@ -75,7 +73,6 @@ class Checkout(ModelWithMetadata):
     discount_name = models.CharField(max_length=255, blank=True, null=True)
     translated_discount_name = models.CharField(max_length=255, blank=True, null=True)
     voucher_code = models.CharField(max_length=12, blank=True, null=True)
-    gift_cards = models.ManyToManyField(GiftCard, blank=True, related_name="checkouts")
 
     objects = CheckoutQueryset.as_manager()
 
@@ -91,40 +88,29 @@ class Checkout(ModelWithMetadata):
     def __len__(self):
         return self.lines.count()
 
-    def get_customer_email(self):
-        return self.user.email if self.user else self.email
-
     def is_shipping_required(self):
         """Return `True` if any of the lines requires shipping."""
         return any(line.is_shipping_required() for line in self)
 
-    def get_shipping_price(self):
+    def get_shipping_price(self, taxes):
         return (
-            self.shipping_method.get_total()
+            self.shipping_method.get_total(taxes)
             if self.shipping_method and self.is_shipping_required()
-            else zero_money()
+            else ZERO_TAXED_MONEY
         )
 
-    def get_subtotal(self, discounts=None):
+    def get_subtotal(self, discounts=None, taxes=None):
         """Return the total cost of the checkout prior to shipping."""
-        subtotals = (line.get_total(discounts) for line in self)
-        return sum(subtotals, zero_money(currency=settings.DEFAULT_CURRENCY))
+        subtotals = (line.get_total(discounts, taxes) for line in self)
+        return sum(subtotals, ZERO_TAXED_MONEY)
 
-    def get_total(self, discounts=None):
+    def get_total(self, discounts=None, taxes=None):
         """Return the total cost of the checkout."""
-        total = (
-            self.get_subtotal(discounts)
-            + self.get_shipping_price()
+        return (
+            self.get_subtotal(discounts, taxes)
+            + self.get_shipping_price(taxes)
             - self.discount_amount
         )
-        return max(total, zero_money(total.currency))
-
-    def get_total_gift_cards_balance(self):
-        """Return the total balance of the gift cards assigned to the checkout."""
-        balance = self.gift_cards.aggregate(models.Sum("current_balance"))[
-            "current_balance__sum"
-        ]
-        return balance or zero_money(currency=settings.DEFAULT_CURRENCY)
 
     def get_total_weight(self):
         # Cannot use `sum` as it parses an empty Weight to an int
@@ -186,9 +172,9 @@ class CheckoutLine(models.Model):
     def __setstate__(self, data):
         self.variant, self.quantity = data
 
-    def get_total(self, discounts=None):
+    def get_total(self, discounts=None, taxes=None):
         """Return the total price of this line."""
-        amount = self.quantity * self.variant.get_price(discounts)
+        amount = self.quantity * self.variant.get_price(discounts, taxes)
         return amount.quantize(CENTS)
 
     def is_shipping_required(self):

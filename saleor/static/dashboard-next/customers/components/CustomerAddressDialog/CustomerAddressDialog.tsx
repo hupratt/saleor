@@ -5,13 +5,13 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
-import React from "react";
+import * as React from "react";
 
-import AddressEdit from "@saleor/components/AddressEdit";
+import AddressEdit from "../../../components/AddressEdit";
 import ConfirmButton, {
   ConfirmButtonTransitionState
-} from "@saleor/components/ConfirmButton";
-import Form from "@saleor/components/Form";
+} from "../../../components/ConfirmButton";
+import Form from "../../../components/Form";
 import i18n from "../../../i18n";
 import { maybe } from "../../../misc";
 import { UserError } from "../../../types";
@@ -68,7 +68,6 @@ const CustomerAddressDialog = withStyles(styles, {})(
     };
     return (
       <Dialog
-        onClose={onClose}
         open={open}
         classes={{ paper: classes.overflow }}
         fullWidth

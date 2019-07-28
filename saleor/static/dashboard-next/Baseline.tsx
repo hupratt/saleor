@@ -1,6 +1,6 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createStyles, withStyles } from "@material-ui/core/styles";
-import React from "react";
+import * as React from "react";
 
 const styles = createStyles({
   "@global": {

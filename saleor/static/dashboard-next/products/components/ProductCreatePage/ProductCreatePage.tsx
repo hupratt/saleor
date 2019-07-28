@@ -1,20 +1,20 @@
 import { RawDraftContentState } from "draft-js";
-import React from "react";
+import * as React from "react";
 
-import AppHeader from "@saleor/components/AppHeader";
-import CardSpacer from "@saleor/components/CardSpacer";
-import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
-import Container from "@saleor/components/Container";
-import Form from "@saleor/components/Form";
-import Grid from "@saleor/components/Grid";
-import PageHeader from "@saleor/components/PageHeader";
-import SaveButtonBar from "@saleor/components/SaveButtonBar";
-import SeoForm from "@saleor/components/SeoForm";
-import VisibilityCard from "@saleor/components/VisibilityCard";
+import AppHeader from "../../../components/AppHeader";
+import CardSpacer from "../../../components/CardSpacer";
+import { ConfirmButtonTransitionState } from "../../../components/ConfirmButton/ConfirmButton";
+import Container from "../../../components/Container";
+import Form from "../../../components/Form";
+import Grid from "../../../components/Grid";
+import PageHeader from "../../../components/PageHeader";
+import SaveButtonBar from "../../../components/SaveButtonBar/SaveButtonBar";
+import SeoForm from "../../../components/SeoForm";
 import i18n from "../../../i18n";
 import { maybe } from "../../../misc";
 import { UserError } from "../../../types";
 import { ProductCreateData_productTypes_edges_node_productAttributes } from "../../types/ProductCreateData";
+import ProductAvailabilityForm from "../ProductAvailabilityForm";
 import ProductDetailsForm from "../ProductDetailsForm";
 import ProductOrganization from "../ProductOrganization";
 import ProductPricing from "../ProductPricing";
@@ -29,13 +29,13 @@ export interface FormData {
     slug: string;
     value: string;
   }>;
+  available: boolean;
   basePrice: number;
   publicationDate: string;
   category: ChoiceType;
   chargeTaxes: boolean;
   collections: ChoiceType[];
   description: RawDraftContentState;
-  isPublished: boolean;
   name: string;
   productType: {
     label: string;
@@ -97,6 +97,7 @@ export const ProductCreatePage: React.StatelessComponent<
 }: ProductCreatePageProps) => {
   const initialData: FormData = {
     attributes: [],
+    available: false,
     basePrice: 0,
     category: {
       label: "",
@@ -105,7 +106,6 @@ export const ProductCreatePage: React.StatelessComponent<
     chargeTaxes: false,
     collections: [],
     description: {} as any,
-    isPublished: false,
     name: "",
     productType: {
       label: "",
@@ -130,7 +130,7 @@ export const ProductCreatePage: React.StatelessComponent<
       initial={initialData}
       confirmLeave
     >
-      {({ change, data, errors, hasChanged, set, submit }) => {
+      {({ change, data, errors, hasChanged, submit }) => {
         const hasVariants =
           data.productType && data.productType.value.hasVariants;
         return (
@@ -203,13 +203,12 @@ export const ProductCreatePage: React.StatelessComponent<
                   data={data}
                   disabled={disabled}
                   onChange={change}
-                  onSet={set}
                 />
                 <CardSpacer />
-                <VisibilityCard
+                <ProductAvailabilityForm
                   data={data}
                   errors={errors}
-                  disabled={disabled}
+                  loading={disabled}
                   onChange={change}
                 />
               </div>

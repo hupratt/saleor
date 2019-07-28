@@ -6,10 +6,9 @@ import graphene
 import pytest
 from django.core.exceptions import ValidationError
 from freezegun import freeze_time
-from prices import Money, TaxedMoney
 
 from saleor.account.models import CustomerEvent
-from saleor.core.taxes import zero_taxed_money
+from saleor.core.utils.taxes import ZERO_TAXED_MONEY
 from saleor.graphql.core.enums import ReportingPeriod
 from saleor.graphql.order.mutations.orders import (
     clean_order_cancel,
@@ -185,10 +184,8 @@ def test_order_query(
     assert order_data["paymentStatusDisplay"] == payment_status_display
     assert order_data["isPaid"] == order.is_fully_paid()
     assert order_data["userEmail"] == order.user_email
-    expected_price = Money(
-        amount=str(order_data["shippingPrice"]["gross"]["amount"]), currency="USD"
-    )
-    assert expected_price == order.shipping_price.gross
+    expected_price = order_data["shippingPrice"]["gross"]["amount"]
+    assert expected_price == order.shipping_price.gross.amount
     assert len(order_data["lines"]) == order.lines.count()
     fulfillment = order.fulfillments.first().fulfillment_order
     fulfillment_order = order_data["fulfillments"][0]["fulfillmentOrder"]
@@ -226,35 +223,6 @@ def test_order_query_customer(api_client):
 
     response = api_client.post_graphql(query)
     assert_no_permission(response)
-
-
-def test_order_query_gift_cards(
-    staff_api_client, permission_manage_orders, order_with_lines, gift_card
-):
-    query = """
-    query OrderQuery($id: ID!) {
-        order(id: $id) {
-            giftCards {
-                displayCode
-                currentBalance {
-                    amount
-                }
-            }
-        }
-    }
-    """
-
-    order_with_lines.gift_cards.add(gift_card)
-
-    order_id = graphene.Node.to_global_id("Order", order_with_lines.id)
-    variables = {"id": order_id}
-    staff_api_client.user.user_permissions.add(permission_manage_orders)
-    response = staff_api_client.post_graphql(query, variables)
-    content = get_graphql_content(response)
-    gift_card_data = content["data"]["order"]["giftCards"][0]
-
-    assert gift_card.display_code == gift_card_data["displayCode"]
-    assert gift_card.current_balance == gift_card_data["currentBalance"]["amount"]
 
 
 def test_order_query_draft_excluded(staff_api_client, permission_manage_orders, orders):
@@ -417,7 +385,7 @@ def test_payment_information_order_events_query(
     data = content["data"]["orders"]["edges"][0]["node"]["events"][0]
 
     assert data["message"] is None
-    assert Money(str(data["amount"]), "USD") == order.total.gross
+    assert data["amount"] == amount
     assert data["emailType"] is None
     assert data["quantity"] is None
     assert data["composedId"] is None
@@ -550,13 +518,12 @@ def test_draft_order_create(
 
 
 def test_draft_order_update(
-    staff_api_client, permission_manage_orders, order_with_lines, voucher
+    staff_api_client, permission_manage_orders, order_with_lines
 ):
     order = order_with_lines
-    assert not order.voucher
     query = """
-        mutation draftUpdate($id: ID!, $voucher: ID!) {
-            draftOrderUpdate(id: $id, input: {voucher: $voucher}) {
+        mutation draftUpdate($id: ID!, $email: String) {
+            draftOrderUpdate(id: $id, input: {userEmail: $email}) {
                 errors {
                     field
                     message
@@ -567,17 +534,15 @@ def test_draft_order_update(
             }
         }
         """
+    email = "not_default@example.com"
     order_id = graphene.Node.to_global_id("Order", order.id)
-    voucher_id = graphene.Node.to_global_id("Voucher", voucher.id)
-    variables = {"id": order_id, "voucher": voucher_id}
+    variables = {"id": order_id, "email": email}
     response = staff_api_client.post_graphql(
         query, variables, permissions=[permission_manage_orders]
     )
     content = get_graphql_content(response)
-    data = content["data"]["draftOrderUpdate"]
-    assert not data["errors"]
-    order.refresh_from_db()
-    assert order.voucher
+    data = content["data"]["draftOrderUpdate"]["order"]
+    assert data["userEmail"] == email
 
 
 def test_draft_order_update_doing_nothing_generates_no_events(
@@ -1685,8 +1650,7 @@ def test_order_update_shipping(
     assert data["order"]["id"] == order_id
 
     order.refresh_from_db()
-    shipping_total = shipping_method.get_total()
-    shipping_price = TaxedMoney(shipping_total, shipping_total)
+    shipping_price = shipping_method.get_total()
     assert order.shipping_method == shipping_method
     assert order.shipping_price_net == shipping_price.net
     assert order.shipping_price_gross == shipping_price.gross
@@ -1697,9 +1661,7 @@ def test_order_update_shipping_clear_shipping_method(
     staff_api_client, permission_manage_orders, order, staff_user, shipping_method
 ):
     order.shipping_method = shipping_method
-    shipping_total = shipping_method.get_total()
-    shipping_price = TaxedMoney(shipping_total, shipping_total)
-    order.shipping_price = shipping_price
+    order.shipping_price = shipping_method.get_total()
     order.shipping_method_name = "Example shipping"
     order.save()
 
@@ -1715,7 +1677,7 @@ def test_order_update_shipping_clear_shipping_method(
 
     order.refresh_from_db()
     assert order.shipping_method is None
-    assert order.shipping_price == zero_taxed_money()
+    assert order.shipping_price == ZERO_TAXED_MONEY
     assert order.shipping_method_name is None
 
 
@@ -1804,7 +1766,7 @@ def test_draft_order_clear_shipping_method(
     assert data["order"]["id"] == order_id
     draft_order.refresh_from_db()
     assert draft_order.shipping_method is None
-    assert draft_order.shipping_price == zero_taxed_money()
+    assert draft_order.shipping_price == ZERO_TAXED_MONEY
     assert draft_order.shipping_method_name is None
 
 
@@ -1828,8 +1790,10 @@ def test_orders_total(staff_api_client, permission_manage_orders, order_with_lin
         query, variables, permissions=[permission_manage_orders]
     )
     content = get_graphql_content(response)
-    amount = str(content["data"]["ordersTotal"]["gross"]["amount"])
-    assert Money(amount, "USD") == order_with_lines.total.gross
+    assert (
+        content["data"]["ordersTotal"]["gross"]["amount"]
+        == order_with_lines.total.gross.amount
+    )
 
 
 def test_order_by_token_query(api_client, order):

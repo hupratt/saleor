@@ -2,7 +2,7 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { ProductTypeInput } from "./../../types/globalTypes";
+import { ProductTypeInput, TaxRateType } from "./../../types/globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ProductTypeUpdate
@@ -12,12 +12,6 @@ export interface ProductTypeUpdate_productTypeUpdate_errors {
   __typename: "Error";
   field: string | null;
   message: string | null;
-}
-
-export interface ProductTypeUpdate_productTypeUpdate_productType_taxType {
-  __typename: "TaxType";
-  description: string | null;
-  taxCode: string | null;
 }
 
 export interface ProductTypeUpdate_productTypeUpdate_productType_productAttributes_values {
@@ -62,7 +56,7 @@ export interface ProductTypeUpdate_productTypeUpdate_productType {
   name: string;
   hasVariants: boolean;
   isShippingRequired: boolean;
-  taxType: ProductTypeUpdate_productTypeUpdate_productType_taxType | null;
+  taxRate: TaxRateType | null;
   productAttributes: (ProductTypeUpdate_productTypeUpdate_productType_productAttributes | null)[] | null;
   variantAttributes: (ProductTypeUpdate_productTypeUpdate_productType_variantAttributes | null)[] | null;
   weight: ProductTypeUpdate_productTypeUpdate_productType_weight | null;

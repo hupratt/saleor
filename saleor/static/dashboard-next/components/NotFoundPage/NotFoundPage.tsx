@@ -6,10 +6,10 @@ import {
   WithStyles
 } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
+import * as React from "react";
 import SVG from "react-inlinesvg";
 
-import notFoundImage from "../../../images/not-found-404.svg";
+import * as notFoundImage from "../../../images/not-found-404.svg";
 import i18n from "../../i18n";
 
 const styles = (theme: Theme) =>

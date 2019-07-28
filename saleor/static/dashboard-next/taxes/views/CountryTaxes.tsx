@@ -1,6 +1,6 @@
-import React from "react";
+import * as React from "react";
 
-import useNavigator from "@saleor/hooks/useNavigator";
+import useNavigator from "../../hooks/useNavigator";
 import { maybe } from "../../misc";
 import CountryTaxesPage from "../components/CountryTaxesPage";
 import { TypedCountryListQuery } from "../queries";

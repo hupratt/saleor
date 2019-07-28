@@ -5,11 +5,10 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import React from "react";
+import * as React from "react";
 
-// tslint:disable no-submodule-imports
-import { ShopInfo_shop_languages } from "@saleor/components/Shop/types/ShopInfo";
-import Skeleton from "@saleor/components/Skeleton";
+import { ShopInfo_shop_languages } from "../../../components/Shop/types/ShopInfo";
+import Skeleton from "../../../components/Skeleton";
 import i18n from "../../../i18n";
 import { maybe, renderCollection } from "../../../misc";
 

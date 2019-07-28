@@ -1,9 +1,9 @@
 import DialogContentText from "@material-ui/core/DialogContentText";
-import React from "react";
+import * as React from "react";
 
-import ActionDialog from "@saleor/components/ActionDialog";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
+import ActionDialog from "../../components/ActionDialog";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
 import i18n from "../../i18n";
 import { getMutationState, maybe } from "../../misc";
 import ProductImagePage from "../components/ProductImagePage";

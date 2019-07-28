@@ -1,5 +1,5 @@
 import createSvgIcon from "@material-ui/icons/utils/createSvgIcon";
-import React from "react";
+import * as React from "react";
 
 export const Moon = createSvgIcon(
   <>

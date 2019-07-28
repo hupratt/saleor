@@ -1,24 +1,18 @@
 """Checkout related views."""
-from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 
 from ...account.forms import LoginForm
-from ...core.taxes import (
-    get_display_price,
-    interface as tax_interface,
-    quantize_price,
-    zero_taxed_money,
-)
 from ...core.utils import format_money, get_user_shipping_country, to_local_currency
+from ...shipping.utils import get_shipping_price_estimate
 from ..forms import CheckoutShippingMethodForm, CountryForm, ReplaceCheckoutLineForm
 from ..models import Checkout
 from ..utils import (
     check_product_availability_and_warn,
     get_checkout_context,
     get_or_empty_db_checkout,
-    get_shipping_price_estimate,
+    get_taxes_for_checkout,
     is_valid_shipping_method,
     update_checkout_quantity,
 )
@@ -76,11 +70,13 @@ def checkout_shipping_address(request, checkout):
 def checkout_shipping_method(request, checkout):
     """Display the shipping method selection step."""
     discounts = request.discounts
-    is_valid_shipping_method(checkout, discounts)
+    taxes = get_taxes_for_checkout(checkout, request.taxes)
+    is_valid_shipping_method(checkout, request.taxes, discounts)
 
     form = CheckoutShippingMethodForm(
         request.POST or None,
         discounts=discounts,
+        taxes=taxes,
         instance=checkout,
         initial={"shipping_method": checkout.shipping_method},
     )
@@ -88,7 +84,7 @@ def checkout_shipping_method(request, checkout):
         form.save()
         return redirect("checkout:summary")
 
-    ctx = get_checkout_context(checkout, discounts)
+    ctx = get_checkout_context(checkout, discounts, taxes)
     ctx.update({"shipping_method_form": form})
     return TemplateResponse(request, "checkout/shipping_method.html", ctx)
 
@@ -112,6 +108,7 @@ def checkout_order_summary(request, checkout):
 def checkout_index(request, checkout):
     """Display checkout details."""
     discounts = request.discounts
+    taxes = request.taxes
     checkout_lines = []
     check_product_availability_and_warn(request, checkout)
 
@@ -140,14 +137,13 @@ def checkout_index(request, checkout):
             variant=line.variant,
             initial=initial,
             discounts=discounts,
+            taxes=taxes,
         )
-        total_line = tax_interface.calculate_checkout_line_total(line, discounts)
-        variant_price = quantize_price(total_line / line.quantity, total_line.currency)
         checkout_lines.append(
             {
                 "variant": line.variant,
-                "get_price": variant_price,
-                "get_total": total_line,
+                "get_price": line.variant.get_price(discounts, taxes),
+                "get_total": line.get_total(discounts, taxes),
                 "form": form,
             }
         )
@@ -155,12 +151,16 @@ def checkout_index(request, checkout):
     default_country = get_user_shipping_country(request)
     country_form = CountryForm(initial={"country": default_country})
     shipping_price_range = get_shipping_price_estimate(
-        checkout, discounts, country_code=default_country
+        price=checkout.get_subtotal(discounts, taxes).gross,
+        weight=checkout.get_total_weight(),
+        country_code=default_country,
+        taxes=taxes,
     )
 
     context = get_checkout_context(
         checkout,
         discounts,
+        taxes,
         currency=request.currency,
         shipping_range=shipping_price_range,
     )
@@ -171,16 +171,18 @@ def checkout_index(request, checkout):
             "shipping_price_range": shipping_price_range,
         }
     )
+
     return TemplateResponse(request, "checkout/index.html", context)
 
 
 @get_or_empty_db_checkout(checkout_queryset=Checkout.objects.for_display())
 def checkout_shipping_options(request, checkout):
     """Display shipping options to get a price estimate."""
-    country_form = CountryForm(request.POST or None)
+    country_form = CountryForm(request.POST or None, taxes=request.taxes)
     if country_form.is_valid():
         shipping_price_range = country_form.get_shipping_price_estimate(
-            checkout, request.discounts
+            price=checkout.get_subtotal(request.discounts, request.taxes).gross,
+            weight=checkout.get_total_weight(),
         )
     else:
         shipping_price_range = None
@@ -188,6 +190,7 @@ def checkout_shipping_options(request, checkout):
     checkout_data = get_checkout_context(
         checkout,
         request.discounts,
+        request.taxes,
         currency=request.currency,
         shipping_range=shipping_price_range,
     )
@@ -203,37 +206,29 @@ def update_checkout_line(request, checkout, variant_id):
 
     checkout_line = get_object_or_404(checkout.lines, variant_id=variant_id)
     discounts = request.discounts
+    taxes = request.taxes
     status = None
     form = ReplaceCheckoutLineForm(
         request.POST,
         checkout=checkout,
         variant=checkout_line.variant,
         discounts=discounts,
+        taxes=taxes,
     )
     if form.is_valid():
         form.save()
-        checkout.refresh_from_db()
-        # Refresh obj from db and confirm that checkout still has this line
-        checkout_line = checkout.lines.filter(variant_id=variant_id).first()
-        line_total = zero_taxed_money(currency=settings.DEFAULT_CURRENCY)
-        if checkout_line:
-            line_total = tax_interface.calculate_checkout_line_total(
-                checkout_line, discounts
-            )
-        subtotal = get_display_price(line_total)
         response = {
             "variantId": variant_id,
-            "subtotal": format_money(subtotal),
+            "subtotal": format_money(checkout_line.get_total(discounts, taxes).gross),
             "total": 0,
             "checkout": {"numItems": checkout.quantity, "numLines": len(checkout)},
         }
 
-        checkout_total = tax_interface.calculate_checkout_subtotal(checkout, discounts)
-        checkout_total = get_display_price(checkout_total)
-        response["total"] = format_money(checkout_total)
+        checkout_total = checkout.get_subtotal(discounts, taxes)
+        response["total"] = format_money(checkout_total.gross)
         local_checkout_total = to_local_currency(checkout_total, request.currency)
         if local_checkout_total is not None:
-            response["localTotal"] = format_money(local_checkout_total)
+            response["localTotal"] = format_money(local_checkout_total.gross)
 
         status = 200
     elif request.POST is not None:
@@ -257,6 +252,7 @@ def clear_checkout(request, checkout):
 def checkout_dropdown(request, checkout):
     """Display a checkout summary suitable for displaying on all pages."""
     discounts = request.discounts
+    taxes = request.taxes
 
     def prepare_line_data(line):
         first_image = line.variant.get_first_image()
@@ -267,7 +263,7 @@ def checkout_dropdown(request, checkout):
             "variant": line.variant,
             "quantity": line.quantity,
             "image": first_image,
-            "line_total": tax_interface.calculate_checkout_line_total(line, discounts),
+            "line_total": line.get_total(discounts, taxes),
             "variant_url": line.variant.get_absolute_url(),
         }
 
@@ -276,7 +272,7 @@ def checkout_dropdown(request, checkout):
     else:
         data = {
             "quantity": checkout.quantity,
-            "total": tax_interface.calculate_checkout_subtotal(checkout, discounts),
+            "total": checkout.get_subtotal(discounts, taxes),
             "lines": [prepare_line_data(line) for line in checkout],
         }
 

@@ -10,19 +10,19 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
-import React from "react";
+import * as React from "react";
 
-import Checkbox from "@saleor/components/Checkbox";
-import Date from "@saleor/components/Date";
-import Money from "@saleor/components/Money";
-import Percent from "@saleor/components/Percent";
-import Skeleton from "@saleor/components/Skeleton";
-import TableHead from "@saleor/components/TableHead";
-import TablePagination from "@saleor/components/TablePagination";
-import i18n from "@saleor/i18n";
-import { maybe, renderCollection } from "@saleor/misc";
-import { ListActions, ListProps } from "@saleor/types";
-import { DiscountValueTypeEnum } from "@saleor/types/globalTypes";
+import Checkbox from "../../../components/Checkbox";
+import Date from "../../../components/Date";
+import Money from "../../../components/Money";
+import Percent from "../../../components/Percent";
+import Skeleton from "../../../components/Skeleton";
+import TableHead from "../../../components/TableHead";
+import TablePagination from "../../../components/TablePagination";
+import i18n from "../../../i18n";
+import { maybe, renderCollection } from "../../../misc";
+import { ListActions, ListProps } from "../../../types";
+import { VoucherDiscountValueType } from "../../../types/globalTypes";
 import { VoucherList_vouchers_edges_node } from "../../types/VoucherList";
 
 export interface VoucherListProps extends ListProps, ListActions {
@@ -79,12 +79,10 @@ const VoucherList = withStyles(styles, {
 })(
   ({
     classes,
-    settings,
     defaultCurrency,
     disabled,
     onNextPage,
     onPreviousPage,
-    onUpdateListSettings,
     onRowClick,
     pageInfo,
     vouchers,
@@ -104,7 +102,7 @@ const VoucherList = withStyles(styles, {
           toolbar={toolbar}
         >
           <TableCell className={classes.colName}>
-            {i18n.t("Code", {
+            {i18n.t("Name", {
               context: "voucher list table header"
             })}
           </TableCell>
@@ -138,10 +136,8 @@ const VoucherList = withStyles(styles, {
           <TableRow>
             <TablePagination
               colSpan={7}
-              settings={settings}
               hasNextPage={pageInfo && !disabled ? pageInfo.hasNextPage : false}
               onNextPage={onNextPage}
-              onUpdateListSettings={onUpdateListSettings}
               hasPreviousPage={
                 pageInfo && !disabled ? pageInfo.hasPreviousPage : false
               }
@@ -167,11 +163,14 @@ const VoucherList = withStyles(styles, {
                     <Checkbox
                       checked={isSelected}
                       disabled={disabled}
-                      onChange={() => toggle(voucher.id)}
+                      onClick={event => {
+                        toggle(voucher.id);
+                        event.stopPropagation();
+                      }}
                     />
                   </TableCell>
                   <TableCell className={classes.colName}>
-                    {maybe<React.ReactNode>(() => voucher.code, <Skeleton />)}
+                    {maybe<React.ReactNode>(() => voucher.name, <Skeleton />)}
                   </TableCell>
                   <TableCell className={classes.colMinSpent}>
                     {voucher && voucher.minAmountSpent ? (
@@ -206,7 +205,7 @@ const VoucherList = withStyles(styles, {
                     voucher.discountValueType &&
                     voucher.discountValue ? (
                       voucher.discountValueType ===
-                      DiscountValueTypeEnum.FIXED ? (
+                      VoucherDiscountValueType.FIXED ? (
                         <Money
                           money={{
                             amount: voucher.discountValue,

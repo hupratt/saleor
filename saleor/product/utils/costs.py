@@ -1,11 +1,10 @@
 from prices import MoneyRange
 
-from ...core.taxes import zero_money
+from ...core.utils.taxes import ZERO_MONEY
 
 
 def get_product_costs_data(product):
-
-    purchase_costs_range = MoneyRange(start=zero_money(), stop=zero_money())
+    purchase_costs_range = MoneyRange(start=ZERO_MONEY, stop=ZERO_MONEY)
     margin = (0, 0)
 
     if not product.variants.exists():
@@ -50,7 +49,7 @@ def get_variant_costs_data(variant):
 
 def get_cost_price(variant):
     if not variant.cost_price:
-        return zero_money()
+        return ZERO_MONEY
     return variant.cost_price
 
 
@@ -58,8 +57,6 @@ def get_margin_for_variant(variant):
     if variant.cost_price is None:
         return None
     base_price = variant.base_price
-    if not base_price:
-        return None
     margin = base_price - variant.cost_price
     percent = round((margin / base_price) * 100, 0)
     return percent

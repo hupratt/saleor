@@ -13,13 +13,13 @@ import TableCell from "@material-ui/core/TableCell";
 import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
+import * as React from "react";
 
-import CardTitle from "@saleor/components/CardTitle";
-import Checkbox from "@saleor/components/Checkbox";
-import Skeleton from "@saleor/components/Skeleton";
-import TableHead from "@saleor/components/TableHead";
-import TablePagination from "@saleor/components/TablePagination";
+import CardTitle from "../../../components/CardTitle";
+import Checkbox from "../../../components/Checkbox";
+import Skeleton from "../../../components/Skeleton";
+import TableHead from "../../../components/TableHead";
+import TablePagination from "../../../components/TablePagination";
 import i18n from "../../../i18n";
 import { maybe, renderCollection } from "../../../misc";
 import { ListActions, ListProps } from "../../../types";
@@ -71,7 +71,9 @@ const DiscountCollections = withStyles(styles, {
   }: DiscountCollectionsProps & WithStyles<typeof styles>) => (
     <Card>
       <CardTitle
-        title={i18n.t("Eligible Collections")}
+        title={i18n.t("Collections assigned to {{ saleName }}", {
+          saleName: maybe(() => sale.name)
+        })}
         toolbar={
           <Button color="primary" onClick={onCollectionAssign}>
             {i18n.t("Assign collections")}
@@ -123,7 +125,10 @@ const DiscountCollections = withStyles(styles, {
                     <Checkbox
                       checked={isSelected}
                       disabled={disabled}
-                      onChange={() => toggle(collection.id)}
+                      onClick={event => {
+                        toggle(collection.id);
+                        event.stopPropagation();
+                      }}
                     />
                   </TableCell>
                   <TableCell>

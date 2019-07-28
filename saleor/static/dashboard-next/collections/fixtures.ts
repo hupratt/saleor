@@ -117,7 +117,6 @@ export const collection: (
       startCursor: ""
     }
   },
-  publicationDate: "2018-08-25T18:45:54.125Z",
   seoDescription: "",
   seoTitle: ""
 });

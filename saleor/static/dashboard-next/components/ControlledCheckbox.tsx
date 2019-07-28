@@ -1,5 +1,5 @@
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import React from "react";
+import * as React from "react";
 
 import Checkbox from "./Checkbox";
 

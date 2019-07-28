@@ -11,12 +11,5 @@ def page_details(request, slug):
     today = datetime.date.today()
     is_visible = page.publication_date is None or page.publication_date <= today
     return TemplateResponse(
-        request,
-        "page/details.html",
-        {
-            "page": page,
-            "is_visible": is_visible,
-            "content_json": page.translated.content_json,
-            "content_html": page.translated.content,
-        },
+        request, "page/details.html", {"page": page, "is_visible": is_visible}
     )

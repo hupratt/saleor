@@ -6,8 +6,8 @@ import {
   WithStyles
 } from "@material-ui/core/styles";
 import Typography, { TypographyProps } from "@material-ui/core/Typography";
-import classNames from "classnames";
-import React from "react";
+import * as classNames from "classnames";
+import * as React from "react";
 
 const styles = (theme: Theme) => {
   const dot = {

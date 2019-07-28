@@ -13,13 +13,13 @@ import TableRow from "@material-ui/core/TableRow";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
+import * as React from "react";
 
-import { DebounceForm } from "@saleor/components/DebounceForm";
-import Form from "@saleor/components/Form";
-import Money from "@saleor/components/Money";
-import Skeleton from "@saleor/components/Skeleton";
-import TableCellAvatar from "@saleor/components/TableCellAvatar";
+import { DebounceForm } from "../../../components/DebounceForm";
+import Form from "../../../components/Form";
+import Money from "../../../components/Money";
+import Skeleton from "../../../components/Skeleton";
+import TableCellAvatar from "../../../components/TableCellAvatar";
 import i18n from "../../../i18n";
 import { maybe, renderCollection } from "../../../misc";
 import { OrderDetails_order_lines } from "../../types/OrderDetails";
@@ -38,7 +38,6 @@ const styles = (theme: Theme) =>
     },
     quantityField: {
       "& input": {
-        padding: "12px 12px 10px",
         textAlign: "right"
       },
       width: 60

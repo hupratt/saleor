@@ -1,37 +1,21 @@
 import Typography from "@material-ui/core/Typography";
-import React from "react";
+import * as React from "react";
 
-import AppHeader from "@saleor/components/AppHeader";
-import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
-import Container from "@saleor/components/Container";
-import Form from "@saleor/components/Form";
-import Grid from "@saleor/components/Grid";
-import PageHeader from "@saleor/components/PageHeader";
-import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import AppHeader from "../../../components/AppHeader";
+import { ConfirmButtonTransitionState } from "../../../components/ConfirmButton/ConfirmButton";
+import Container from "../../../components/Container";
+import Form from "../../../components/Form";
+import Grid from "../../../components/Grid";
+import PageHeader from "../../../components/PageHeader";
+import SaveButtonBar from "../../../components/SaveButtonBar";
 import i18n from "../../../i18n";
 import { maybe } from "../../../misc";
 import { AuthorizationKeyType } from "../../../types/globalTypes";
 import { SiteSettings_shop } from "../../types/SiteSettings";
-import SiteSettingsAddress from "../SiteSettingsAddress/SiteSettingsAddress";
 import SiteSettingsDetails from "../SiteSettingsDetails/SiteSettingsDetails";
 import SiteSettingsKeys from "../SiteSettingsKeys/SiteSettingsKeys";
 
-export interface SiteSettingsPageAddressFormData {
-  city: string;
-  companyName: string;
-  country: {
-    code: string;
-    country: string;
-  };
-  countryArea: string;
-  phone: string;
-  postalCode: string;
-  streetAddress1: string;
-  streetAddress2: string;
-}
-
-export interface SiteSettingsPageFormData
-  extends SiteSettingsPageAddressFormData {
+export interface SiteSettingsPageFormData {
   description: string;
   domain: string;
   name: string;
@@ -62,20 +46,9 @@ const SiteSettingsPage: React.StatelessComponent<SiteSettingsPageProps> = ({
   onSubmit
 }) => {
   const initialForm: SiteSettingsPageFormData = {
-    city: maybe(() => shop.companyAddress.city, ""),
-    companyName: maybe(() => shop.companyAddress.companyName, ""),
-    country: maybe(() => shop.companyAddress.country, {
-      code: "",
-      country: ""
-    }),
-    countryArea: maybe(() => shop.companyAddress.countryArea, ""),
     description: maybe(() => shop.description, ""),
     domain: maybe(() => shop.domain.host, ""),
-    name: maybe(() => shop.name, ""),
-    phone: maybe(() => shop.companyAddress.phone, ""),
-    postalCode: maybe(() => shop.companyAddress.postalCode, ""),
-    streetAddress1: maybe(() => shop.companyAddress.streetAddress1, ""),
-    streetAddress2: maybe(() => shop.companyAddress.streetAddress2, "")
+    name: maybe(() => shop.name, "")
   };
   return (
     <Form
@@ -96,23 +69,6 @@ const SiteSettingsPage: React.StatelessComponent<SiteSettingsPageProps> = ({
             <Typography variant="h6">{i18n.t("Site Settings")}</Typography>
             <SiteSettingsDetails
               data={data}
-              errors={formErrors}
-              disabled={disabled}
-              onChange={change}
-            />
-            <Typography variant="h6">
-              {i18n.t("Company information")}
-            </Typography>
-            <SiteSettingsAddress
-              data={data}
-              countries={maybe(
-                () =>
-                  shop.countries.map(country => ({
-                    code: country.code,
-                    label: country.country
-                  })),
-                []
-              )}
               errors={formErrors}
               disabled={disabled}
               onChange={change}

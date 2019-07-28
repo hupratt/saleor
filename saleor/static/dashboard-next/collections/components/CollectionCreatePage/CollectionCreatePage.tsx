@@ -1,19 +1,19 @@
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { ContentState, convertToRaw, RawDraftContentState } from "draft-js";
-import React from "react";
+import { RawDraftContentState } from "draft-js";
+import * as React from "react";
 
-import AppHeader from "@saleor/components/AppHeader";
-import { CardSpacer } from "@saleor/components/CardSpacer";
-import CardTitle from "@saleor/components/CardTitle";
-import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
-import { Container } from "@saleor/components/Container";
-import Form from "@saleor/components/Form";
-import Grid from "@saleor/components/Grid";
-import PageHeader from "@saleor/components/PageHeader";
-import SaveButtonBar from "@saleor/components/SaveButtonBar";
-import SeoForm from "@saleor/components/SeoForm";
-import VisibilityCard from "@saleor/components/VisibilityCard";
+import AppHeader from "../../../components/AppHeader";
+import { CardSpacer } from "../../../components/CardSpacer";
+import CardTitle from "../../../components/CardTitle";
+import { ConfirmButtonTransitionState } from "../../../components/ConfirmButton/ConfirmButton";
+import { Container } from "../../../components/Container";
+import { ControlledSwitch } from "../../../components/ControlledSwitch";
+import Form from "../../../components/Form";
+import Grid from "../../../components/Grid";
+import PageHeader from "../../../components/PageHeader";
+import SaveButtonBar from "../../../components/SaveButtonBar";
+import SeoForm from "../../../components/SeoForm";
 import i18n from "../../../i18n";
 import { UserError } from "../../../types";
 import CollectionDetails from "../CollectionDetails/CollectionDetails";
@@ -27,7 +27,6 @@ export interface CollectionCreatePageFormData {
   backgroundImageAlt: string;
   description: RawDraftContentState;
   name: string;
-  publicationDate: string;
   isPublished: boolean;
   seoDescription: string;
   seoTitle: string;
@@ -47,10 +46,9 @@ const initialForm: CollectionCreatePageFormData = {
     value: null
   },
   backgroundImageAlt: "",
-  description: convertToRaw(ContentState.createFromText("")),
+  description: null,
   isPublished: false,
   name: "",
-  publicationDate: "",
   seoDescription: "",
   seoTitle: ""
 };
@@ -142,11 +140,14 @@ const CollectionCreatePage: React.StatelessComponent<
                   })}
                 />
                 <CardContent>
-                  <VisibilityCard
-                    data={data}
-                    errors={formErrors}
+                  <ControlledSwitch
+                    checked={data.isPublished}
                     disabled={disabled}
+                    name="isPublished"
                     onChange={change}
+                    label={i18n.t("Publish on storefront", {
+                      context: "button"
+                    })}
                   />
                 </CardContent>
               </Card>

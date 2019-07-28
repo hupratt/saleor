@@ -5,7 +5,7 @@ import {
   WithStyles
 } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
-import React from "react";
+import * as React from "react";
 
 const styles = (theme: Theme) =>
   createStyles({

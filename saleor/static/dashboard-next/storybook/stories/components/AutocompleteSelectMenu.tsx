@@ -1,68 +1,51 @@
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
 import AutocompleteSelectMenu, {
-  AutocompleteSelectMenuProps
-} from "@saleor/components/AutocompleteSelectMenu";
-import Form from "@saleor/components/Form";
-import { getMenuItemByValue, IMenu } from "../../../utils/menu";
+  AutocompleteSelectMenuProps,
+  SelectMenuItem
+} from "../../../components/AutocompleteSelectMenu";
 import Decorator from "../../Decorator";
 
-const menu: IMenu = [
+const menu: SelectMenuItem[] = [
   {
-    children: [],
-    data: null,
     label: "Item 1",
     value: "item1"
   },
   {
     children: [
       {
-        children: [],
-        data: null,
         label: "Item 1.1",
         value: "item1.1"
       },
       {
-        children: [],
-        data: null,
         label: "Item 1.2",
         value: "item1.2"
       }
     ],
-    data: null,
     label: "Menu 1"
   },
   {
-    children: [],
-    data: null,
     label: "Item 3",
     value: "item3"
   },
   {
-    children: [],
-    data: null,
     label: "Item 4",
     value: "item4"
   },
   {
     children: [
       {
-        children: [],
-        data: null,
         label: "Item 5.1",
         value: "item5.1"
       },
       {
-        children: [],
-        data: null,
         label: "Item 5.2",
         value: "item5.2"
       }
     ],
-    data: null,
     label: "Menu 5"
   }
 ];
@@ -101,15 +84,4 @@ storiesOf("Generics / Autocomplete Menu", module)
       error={true}
       helperText="Generic form error"
     />
-  ))
-  .add("interactive", () => (
-    <Form initial={{ menu: menu[1].children[1].value }}>
-      {({ change, data }) => (
-        <AutocompleteSelectMenu
-          {...props}
-          displayValue={getMenuItemByValue(menu, data.menu).label.toString()}
-          onChange={change}
-        />
-      )}
-    </Form>
   ));

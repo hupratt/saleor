@@ -4,12 +4,12 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
-import React from "react";
+import * as React from "react";
 
 import ConfirmButton, {
   ConfirmButtonTransitionState
-} from "@saleor/components/ConfirmButton";
-import Form from "@saleor/components/Form";
+} from "../../../components/ConfirmButton";
+import Form from "../../../components/Form";
 import i18n from "../../../i18n";
 
 export interface FormData {
@@ -27,7 +27,7 @@ interface OrderFulfillmentTrackingDialogProps {
 const OrderFulfillmentTrackingDialog: React.StatelessComponent<
   OrderFulfillmentTrackingDialogProps
 > = ({ confirmButtonState, open, trackingNumber, onConfirm, onClose }) => (
-  <Dialog onClose={onClose} open={open}>
+  <Dialog open={open}>
     <Form initial={{ trackingNumber }} onSubmit={onConfirm}>
       {({ change, data, submit }) => (
         <>

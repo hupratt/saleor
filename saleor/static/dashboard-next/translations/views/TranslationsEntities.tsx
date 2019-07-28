@@ -1,12 +1,9 @@
 import { stringify as stringifyQs } from "qs";
-import React from "react";
+import * as React from "react";
 
-import useNavigator from "@saleor/hooks/useNavigator";
-import usePaginator, {
-  createPaginationState
-} from "@saleor/hooks/usePaginator";
-import useShop from "@saleor/hooks/useShop";
-import { PAGINATE_BY } from "../../config";
+import useNavigator from "../../hooks/useNavigator";
+import usePaginator, { createPaginationState } from "../../hooks/usePaginator";
+import useShop from "../../hooks/useShop";
 import { maybe } from "../../misc";
 import { Pagination } from "../../types";
 import TranslationsEntitiesList from "../components/TranslationsEntitiesList";
@@ -37,6 +34,8 @@ interface TranslationsEntitiesProps {
   language: string;
   params: TranslationsEntitiesListQueryParams;
 }
+
+const PAGINATE_BY = 20;
 
 function sumTranslations(
   acc: number,

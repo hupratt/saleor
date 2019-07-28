@@ -118,7 +118,7 @@ export interface ProductImageUpdate_productImageUpdate_product_images {
   __typename: "ProductImage";
   id: string;
   alt: string;
-  sortOrder: number | null;
+  sortOrder: number;
   url: string;
 }
 

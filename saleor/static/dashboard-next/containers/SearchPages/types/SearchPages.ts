@@ -27,7 +27,5 @@ export interface SearchPages {
 }
 
 export interface SearchPagesVariables {
-  after?: string | null;
-  first: number;
   query: string;
 }

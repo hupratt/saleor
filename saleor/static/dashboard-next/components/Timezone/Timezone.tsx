@@ -1,10 +1,8 @@
-import React from "react";
+import * as React from "react";
 
-export const TimezoneContext = React.createContext<string>(undefined);
 const {
   Consumer: TimezoneConsumer,
   Provider: TimezoneProvider
-} = TimezoneContext;
+} = React.createContext<string>(undefined);
 
 export { TimezoneConsumer, TimezoneProvider };
-export default TimezoneContext;

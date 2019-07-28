@@ -1,7 +1,7 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
-import Date from "@saleor/components/Date";
+import Date from "../../../components/Date";
 import CardDecorator from "../../CardDecorator";
 import Decorator from "../../Decorator";
 

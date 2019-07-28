@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
@@ -5,7 +7,6 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.utils import timezone
 from django.utils.translation import pgettext_lazy
 
 from ...core.utils import get_paginator_items
@@ -22,11 +23,8 @@ def get_voucher_type_forms(voucher, data):
         VoucherType.SHIPPING: forms.ShippingVoucherForm(
             data or None, instance=voucher, prefix=VoucherType.SHIPPING
         ),
-        VoucherType.ENTIRE_ORDER: forms.EntireOrderVoucherForm(
-            data or None, instance=voucher, prefix=VoucherType.ENTIRE_ORDER
-        ),
-        VoucherType.SPECIFIC_PRODUCT: forms.SpecificProductVoucherForm(
-            data or None, instance=voucher, prefix=VoucherType.SPECIFIC_PRODUCT
+        VoucherType.VALUE: forms.ValueVoucherForm(
+            data or None, instance=voucher, prefix=VoucherType.VALUE
         ),
         VoucherType.PRODUCT: forms.ProductVoucherForm(
             data or None, instance=voucher, prefix=VoucherType.PRODUCT
@@ -193,7 +191,7 @@ def voucher_delete(request, pk):
 @staff_member_required
 @permission_required("discount.manage_discounts")
 def ajax_voucher_list(request):
-    queryset = Voucher.objects.active(date=timezone.now())
+    queryset = Voucher.objects.active(date=date.today())
 
     search_query = request.GET.get("q", "")
     if search_query:

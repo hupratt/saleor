@@ -29,11 +29,10 @@ class Menu(CountableDjangoObjectType):
         only_fields = ["id", "name"]
         model = models.Menu
 
-    @staticmethod
-    def resolve_items(root: models.Menu, _info, **_kwargs):
-        if hasattr(root, "prefetched_items"):
-            return root.prefetched_items
-        return root.items.filter(level=0)
+    def resolve_items(self, _info, **_kwargs):
+        if hasattr(self, "prefetched_items"):
+            return self.prefetched_items
+        return self.items.filter(level=0)
 
 
 class MenuItem(CountableDjangoObjectType):
@@ -71,15 +70,14 @@ class MenuItem(CountableDjangoObjectType):
         ]
         model = models.MenuItem
 
-    @staticmethod
-    def resolve_children(root: models.MenuItem, _info, **_kwargs):
-        return root.children.all()
+    def resolve_children(self, _info, **_kwargs):
+        return self.children.all()
 
 
 class MenuItemMoveInput(graphene.InputObjectType):
     item_id = graphene.ID(description="The menu item ID to move.", required=True)
     parent_id = graphene.ID(
-        description="ID of the parent menu. If empty, menu will be top level menu."
+        description=("ID of the parent menu. If empty, menu will be top level menu.")
     )
     sort_order = graphene.Int(
         description="Sorting position of the menu item (from 0 to x)."

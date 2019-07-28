@@ -1,7 +1,7 @@
-import React from "react";
+import * as React from "react";
 
-import useNavigator from "@saleor/hooks/useNavigator";
-import useUser from "@saleor/hooks/useUser";
+import useNavigator from "../../hooks/useNavigator";
+import useUser from "../../hooks/useUser";
 import { getUserName, maybe } from "../../misc";
 import { orderListUrl } from "../../orders/urls";
 import { productListUrl, productVariantEditUrl } from "../../products/urls";

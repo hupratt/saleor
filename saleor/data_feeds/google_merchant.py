@@ -1,17 +1,14 @@
 import csv
 import gzip
-from typing import Iterable
+from datetime import date
 
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import add_domain
 from django.core.files.storage import default_storage
-from django.utils import timezone
 from django.utils.encoding import smart_text
 
-from ..core.taxes import zero_money
-from ..discount import DiscountInfo
-from ..discount.utils import fetch_discounts
+from ..discount.models import Sale
 from ..product.models import Attribute, AttributeValue, Category, ProductVariant
 
 CATEGORY_SEPARATOR = " > "
@@ -58,31 +55,31 @@ def get_feed_items():
     return items
 
 
-def item_id(item: ProductVariant):
+def item_id(item):
     return item.sku
 
 
-def item_mpn(item: ProductVariant):
+def item_mpn(item):
     return str(item.sku)
 
 
-def item_guid(item: ProductVariant):
+def item_guid(item):
     return item.sku
 
 
-def item_link(item: ProductVariant, current_site):
+def item_link(item, current_site):
     return add_domain(current_site.domain, item.get_absolute_url(), not settings.DEBUG)
 
 
-def item_title(item: ProductVariant):
+def item_title(item):
     return item.display_product()
 
 
-def item_description(item: ProductVariant):
-    return item.product.plain_text_description[:100]
+def item_description(item):
+    return item.product.description[:100]
 
 
-def item_condition(item: ProductVariant):
+def item_condition(item):
     """Return a valid item condition.
 
     Allowed values: new, refurbished, and used.
@@ -92,7 +89,7 @@ def item_condition(item: ProductVariant):
     return "new"
 
 
-def item_brand(item: ProductVariant, attributes_dict, attribute_values_dict):
+def item_brand(item, attributes_dict, attribute_values_dict):
     """Return an item brand.
 
     This field is required.
@@ -120,22 +117,22 @@ def item_brand(item: ProductVariant, attributes_dict, attribute_values_dict):
     return brand
 
 
-def item_tax(item: ProductVariant, discounts: Iterable[DiscountInfo]):
+def item_tax(item, discounts):
     """Return item tax.
 
     For some countries you need to set tax info
     Read more:
     https://support.google.com/merchants/answer/6324454
     """
-    # FIXME https://github.com/mirumee/saleor/issues/4311
-    return "US::%s:y" % zero_money()
+    price = item.get_price(discounts=discounts)
+    return "US::%s:y" % price.tax
 
 
-def item_group_id(item: ProductVariant):
+def item_group_id(item):
     return str(item.product.pk)
 
 
-def item_image_link(item: ProductVariant, current_site):
+def item_image_link(item, current_site):
     product_image = item.get_first_image()
     if product_image:
         image = product_image.image
@@ -143,13 +140,13 @@ def item_image_link(item: ProductVariant, current_site):
     return None
 
 
-def item_availability(item: ProductVariant):
+def item_availability(item):
     if item.quantity_available:
         return "in stock"
     return "out of stock"
 
 
-def item_google_product_category(item: ProductVariant, category_paths):
+def item_google_product_category(item, category_paths):
     """Return a canonical product category.
 
     To have your categories accepted, please use names accepted by Google or
@@ -166,22 +163,22 @@ def item_google_product_category(item: ProductVariant, category_paths):
     return category_path
 
 
-def item_price(item: ProductVariant):
+def item_price(item):
     price = item.get_price(discounts=None)
-    return "%s %s" % (price.amount, price.currency)
+    return "%s %s" % (price.gross.amount, price.currency)
 
 
-def item_sale_price(item: ProductVariant, discounts: Iterable[DiscountInfo]):
+def item_sale_price(item, discounts):
     sale_price = item.get_price(discounts=discounts)
-    return "%s %s" % (sale_price.amount, sale_price.currency)
+    return "%s %s" % (sale_price.gross.amount, sale_price.currency)
 
 
 def item_attributes(
-    item: ProductVariant,
+    item,
     categories,
     category_paths,
     current_site,
-    discounts: Iterable[DiscountInfo],
+    discounts,
     attributes_dict,
     attribute_values_dict,
 ):
@@ -223,7 +220,9 @@ def write_feed(file_obj):
     writer = csv.DictWriter(file_obj, ATTRIBUTES, dialect=csv.excel_tab)
     writer.writeheader()
     categories = Category.objects.all()
-    discounts = fetch_discounts(timezone.now())
+    discounts = Sale.objects.active(date.today()).prefetch_related(
+        "products", "categories"
+    )
     attributes_dict = {a.slug: a.pk for a in Attribute.objects.all()}
     attribute_values_dict = {
         smart_text(a.pk): smart_text(a) for a in AttributeValue.objects.all()

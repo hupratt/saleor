@@ -1,6 +1,6 @@
 import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
-import React from "react";
+import * as React from "react";
 import { Query, QueryResult } from "react-apollo";
 
 import { ApolloQueryResult } from "apollo-client";
@@ -18,14 +18,10 @@ export interface LoadMore<TData, TVariables> {
   ) => Promise<ApolloQueryResult<TData>>;
 }
 
-export type TypedQueryResult<TData, TVariables> = QueryResult<
-  TData,
-  TVariables
-> &
-  LoadMore<TData, TVariables>;
-
-export interface TypedQueryInnerProps<TData, TVariables> {
-  children: (result: TypedQueryResult<TData, TVariables>) => React.ReactNode;
+interface TypedQueryInnerProps<TData, TVariables> {
+  children: (
+    result: QueryResult<TData, TVariables> & LoadMore<TData, TVariables>
+  ) => React.ReactNode;
   displayLoader?: boolean;
   skip?: boolean;
   variables?: TVariables;
@@ -62,11 +58,9 @@ class QueryProgress extends React.Component<QueryProgressProps, {}> {
   }
 }
 
-export function TypedQuery<TData, TVariables>(
-  query: DocumentNode
-): React.FC<TypedQueryInnerProps<TData, TVariables>> {
+export function TypedQuery<TData, TVariables>(query: DocumentNode) {
   class StrictTypedQuery extends Query<TData, TVariables> {}
-  return props => {
+  return (props: TypedQueryInnerProps<TData, TVariables>) => {
     const navigate = useNavigator();
     const pushMessage = useNotifier();
 

@@ -1,5 +1,5 @@
 import { stringify as stringifyQs } from "qs";
-import urlJoin from "url-join";
+import * as urlJoin from "url-join";
 
 import { BulkAction, Dialog, Pagination, SingleAction } from "../types";
 

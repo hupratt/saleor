@@ -3,6 +3,7 @@ from django.template.response import TemplateResponse
 
 from ..utils import (
     get_checkout_context,
+    get_taxes_for_checkout,
     update_shipping_address_in_anonymous_checkout,
     update_shipping_address_in_checkout,
 )
@@ -17,7 +18,8 @@ def anonymous_user_shipping_address_view(request, checkout):
     if updated:
         return redirect("checkout:shipping-method")
 
-    ctx = get_checkout_context(checkout, request.discounts)
+    taxes = get_taxes_for_checkout(checkout, request.taxes)
+    ctx = get_checkout_context(checkout, request.discounts, taxes)
     ctx.update({"address_form": address_form, "user_form": user_form})
     return TemplateResponse(request, "checkout/shipping_address.html", ctx)
 
@@ -35,10 +37,12 @@ def user_shipping_address_view(request, checkout):
     addresses_form, address_form, updated = update_shipping_address_in_checkout(
         checkout, user_addresses, request.POST or None, request.country
     )
+
     if updated:
         return redirect("checkout:shipping-method")
 
-    ctx = get_checkout_context(checkout, request.discounts)
+    taxes = get_taxes_for_checkout(checkout, request.taxes)
+    ctx = get_checkout_context(checkout, request.discounts, taxes)
     ctx.update(
         {
             "additional_addresses": user_addresses,

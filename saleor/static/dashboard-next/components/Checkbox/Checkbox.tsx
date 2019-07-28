@@ -8,20 +8,12 @@ import {
   WithStyles
 } from "@material-ui/core/styles";
 import classNames from "classnames";
-import React from "react";
-import { stopPropagation } from "../../misc";
+import * as React from "react";
 
 export type CheckboxProps = Omit<
   MuiCheckboxProps,
-  | "checkedIcon"
-  | "color"
-  | "icon"
-  | "indeterminateIcon"
-  | "classes"
-  | "onChange"
-> & {
-  onChange?: (event: React.ChangeEvent<any>) => void;
-};
+  "checkedIcon" | "color" | "icon" | "indeterminateIcon" | "classes"
+>;
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -98,7 +90,7 @@ const Checkbox = withStyles(styles, { name: "Checkbox" })(
         centerRipple
         className={classNames(classes.root, className)}
         disabled={disabled}
-        onClick={stopPropagation(() => inputRef.current.click())}
+        onClick={onClick}
       >
         <input
           className={classNames(classes.box, {
@@ -111,7 +103,7 @@ const Checkbox = withStyles(styles, { name: "Checkbox" })(
           name={name}
           value={checked !== undefined && checked.toString()}
           ref={inputRef}
-          onChange={onChange}
+          onChange={event => onChange(event, !inputRef.current.checked)}
         />
       </ButtonBase>
     );

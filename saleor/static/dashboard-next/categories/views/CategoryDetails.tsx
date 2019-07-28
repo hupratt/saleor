@@ -1,17 +1,14 @@
 import DialogContentText from "@material-ui/core/DialogContentText";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import React from "react";
+import * as React from "react";
 
-import ActionDialog from "@saleor/components/ActionDialog";
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useBulkActions from "@saleor/hooks/useBulkActions";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
-import usePaginator, {
-  createPaginationState
-} from "@saleor/hooks/usePaginator";
-import { PAGINATE_BY } from "../../config";
+import ActionDialog from "../../components/ActionDialog";
+import { WindowTitle } from "../../components/WindowTitle";
+import useBulkActions from "../../hooks/useBulkActions";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
+import usePaginator, { createPaginationState } from "../../hooks/usePaginator";
 import i18n from "../../i18n";
 import { getMutationState, maybe } from "../../misc";
 import { TypedProductBulkDeleteMutation } from "../../products/mutations";
@@ -49,6 +46,8 @@ export function getActiveTab(tabName: string): CategoryPageTab {
     ? CategoryPageTab.products
     : CategoryPageTab.categories;
 }
+
+const PAGINATE_BY = 20;
 
 export const CategoryDetails: React.StatelessComponent<
   CategoryDetailsProps
@@ -314,7 +313,7 @@ export const CategoryDetails: React.StatelessComponent<
                                     confirmButtonState={
                                       removeDialogTransitionState
                                     }
-                                    onClose={closeModal}
+                                    onClose={() => closeModal}
                                     onConfirm={() =>
                                       deleteCategory({ variables: { id } })
                                     }
@@ -327,7 +326,7 @@ export const CategoryDetails: React.StatelessComponent<
                                     <DialogContentText
                                       dangerouslySetInnerHTML={{
                                         __html: i18n.t(
-                                          "Are you sure you want to remove <strong>{{ categoryName }}</strong>? <br /> ",
+                                          "Are you sure you want to remove <strong>{{ categoryName }}</strong>?",
                                           {
                                             categoryName: maybe(
                                               () => data.category.name
@@ -337,11 +336,6 @@ export const CategoryDetails: React.StatelessComponent<
                                         )
                                       }}
                                     />
-                                    <DialogContentText>
-                                      {i18n.t(
-                                        "Remember that this will also remove all products assigned to this category."
-                                      )}
-                                    </DialogContentText>
                                   </ActionDialog>
                                   <ActionDialog
                                     open={params.action === "delete-categories"}
@@ -371,11 +365,6 @@ export const CategoryDetails: React.StatelessComponent<
                                         )
                                       }}
                                     />
-                                    <DialogContentText>
-                                      {i18n.t(
-                                        "Remember that this will also remove all products assigned to this category."
-                                      )}
-                                    </DialogContentText>
                                   </ActionDialog>
                                   <ActionDialog
                                     open={params.action === "delete-products"}

@@ -71,17 +71,14 @@ class ShippingZone(CountableDjangoObjectType):
         interfaces = [relay.Node]
         only_fields = ["default", "id", "name"]
 
-    @staticmethod
-    def resolve_price_range(root: models.ShippingZone, *_args):
-        return root.price_range
+    def resolve_price_range(self, *_args):
+        return self.price_range
 
-    @staticmethod
-    def resolve_countries(root: models.ShippingZone, *_args):
+    def resolve_countries(self, *_args):
         return [
             CountryDisplay(code=country.code, country=country.name)
-            for country in root.countries
+            for country in self.countries
         ]
 
-    @staticmethod
-    def resolve_shipping_methods(root: models.ShippingZone, *_args):
-        return root.shipping_methods.all()
+    def resolve_shipping_methods(self, *_args):
+        return self.shipping_methods.all()

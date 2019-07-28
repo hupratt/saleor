@@ -4,7 +4,7 @@ import {
   withStyles,
   WithStyles
 } from "@material-ui/core/styles";
-import React from "react";
+import * as React from "react";
 
 const styles = (theme: Theme) =>
   createStyles({

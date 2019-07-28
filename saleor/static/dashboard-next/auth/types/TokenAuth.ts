@@ -20,11 +20,6 @@ export interface TokenAuth_tokenCreate_user_permissions {
   name: string;
 }
 
-export interface TokenAuth_tokenCreate_user_avatar {
-  __typename: "Image";
-  url: string;
-}
-
 export interface TokenAuth_tokenCreate_user {
   __typename: "User";
   id: string;
@@ -34,7 +29,6 @@ export interface TokenAuth_tokenCreate_user {
   isStaff: boolean;
   note: string | null;
   permissions: (TokenAuth_tokenCreate_user_permissions | null)[] | null;
-  avatar: TokenAuth_tokenCreate_user_avatar | null;
 }
 
 export interface TokenAuth_tokenCreate {

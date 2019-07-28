@@ -1,7 +1,7 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
-import PhoneField from "@saleor/components/PhoneField";
+import PhoneField from "../../../components/PhoneField";
 import { prefixes } from "../../../orders/fixtures";
 import CardDecorator from "../../CardDecorator";
 import Decorator from "../../Decorator";

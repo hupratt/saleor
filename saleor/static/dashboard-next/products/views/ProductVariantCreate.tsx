@@ -1,9 +1,9 @@
-import React from "react";
+import * as React from "react";
 
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
-import useShop from "@saleor/hooks/useShop";
+import { WindowTitle } from "../../components/WindowTitle";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
+import useShop from "../../hooks/useShop";
 import i18n from "../../i18n";
 import { decimal, getMutationState, maybe } from "../../misc";
 import ProductVariantCreatePage from "../components/ProductVariantCreatePage";
@@ -17,12 +17,12 @@ interface ProductUpdateProps {
 }
 
 interface FormData {
-  attributes: Array<{
+  attributes?: Array<{
     slug: string;
     value: string;
   }>;
-  costPrice: string;
-  priceOverride: string;
+  costPrice?: string;
+  priceOverride?: string;
   quantity: number;
   sku: string;
 }
@@ -60,10 +60,7 @@ export const ProductVariant: React.StatelessComponent<ProductUpdateProps> = ({
               const handleSubmit = (formData: FormData) =>
                 variantCreate({
                   variables: {
-                    attributes: formData.attributes.map(attribute => ({
-                      slug: attribute.slug,
-                      value: attribute.value
-                    })),
+                    attributes: formData.attributes,
                     costPrice: decimal(formData.costPrice),
                     priceOverride: decimal(formData.priceOverride),
                     product: productId,

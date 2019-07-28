@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 
 import LoginPage, { FormData } from "../components/LoginPage";
 import { UserContext } from "../index";

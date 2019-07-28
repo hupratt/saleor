@@ -1,15 +1,13 @@
 from collections import namedtuple
 from decimal import Decimal
-from typing import Iterable, Union
+from typing import Union
 
 from prices import TaxedMoneyRange
 
 from saleor.graphql.core.types import MoneyRange
 from saleor.product.models import Product, ProductVariant
 
-from ...core.taxes.interface import apply_taxes_to_product
 from ...core.utils import to_local_currency
-from ...discount import DiscountInfo
 from .. import ProductAvailabilityStatus, VariantAvailabilityStatus
 
 ProductAvailability = namedtuple(
@@ -39,15 +37,11 @@ VariantAvailability = namedtuple(
 )
 
 
-def products_with_availability(
-    products, discounts, country, local_currency, taxes=None
-):
+def products_with_availability(products, discounts, taxes, local_currency):
     for product in products:
         yield (
             product,
-            get_product_availability(
-                product, discounts, country, local_currency, taxes=taxes
-            ),
+            get_product_availability(product, discounts, taxes, local_currency),
         )
 
 
@@ -98,7 +92,7 @@ def _get_total_discount(
 def _get_product_price_range(
     discounted: Union[MoneyRange, TaxedMoneyRange],
     undiscounted: Union[MoneyRange, TaxedMoneyRange],
-    local_currency: str = None,
+    local_currency=None,
 ):
     price_range_local = None
     discount_local_currency = None
@@ -113,31 +107,11 @@ def _get_product_price_range(
 
 
 def get_product_availability(
-    product: Product,
-    discounts: Iterable[DiscountInfo] = None,
-    country=None,
-    local_currency=None,
-    taxes=None,
+    product: Product, discounts=None, taxes=None, local_currency=None
 ) -> ProductAvailability:
 
-    discounted_net_range = product.get_price_range(discounts=discounts)
-    undiscounted_net_range = product.get_price_range()
-    discounted = TaxedMoneyRange(
-        start=apply_taxes_to_product(
-            product, discounted_net_range.start, country, taxes=taxes
-        ),
-        stop=apply_taxes_to_product(
-            product, discounted_net_range.stop, country, taxes=taxes
-        ),
-    )
-    undiscounted = TaxedMoneyRange(
-        start=apply_taxes_to_product(
-            product, undiscounted_net_range.start, country, taxes=taxes
-        ),
-        stop=apply_taxes_to_product(
-            product, undiscounted_net_range.stop, country, taxes=taxes
-        ),
-    )
+    discounted = product.get_price_range(discounts=discounts, taxes=taxes)
+    undiscounted = product.get_price_range(taxes=taxes)
 
     discount = _get_total_discount(undiscounted, discounted)
     price_range_local, discount_local_currency = _get_product_price_range(
@@ -158,19 +132,11 @@ def get_product_availability(
 
 
 def get_variant_availability(
-    variant: ProductVariant,
-    discounts: Iterable[DiscountInfo] = None,
-    country=None,
-    local_currency=None,
-    taxes=None,
+    variant: ProductVariant, discounts=None, taxes=None, local_currency=None
 ) -> VariantAvailability:
 
-    discounted = apply_taxes_to_product(
-        variant.product, variant.get_price(discounts=discounts), country, taxes=taxes
-    )
-    undiscounted = apply_taxes_to_product(
-        variant.product, variant.get_price(), country, taxes=taxes
-    )
+    discounted = variant.get_price(discounts=discounts, taxes=taxes)
+    undiscounted = variant.get_price(taxes=taxes)
 
     discount = _get_total_discount(undiscounted, discounted)
 

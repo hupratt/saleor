@@ -11,14 +11,14 @@ import {
 } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
+import * as React from "react";
 
 import ConfirmButton, {
   ConfirmButtonTransitionState
-} from "@saleor/components/ConfirmButton";
-import { ControlledCheckbox } from "@saleor/components/ControlledCheckbox";
-import Form from "@saleor/components/Form";
-import FormSpacer from "@saleor/components/FormSpacer";
+} from "../../../components/ConfirmButton/ConfirmButton";
+import { ControlledCheckbox } from "../../../components/ControlledCheckbox";
+import Form from "../../../components/Form";
+import FormSpacer from "../../../components/FormSpacer";
 import i18n from "../../../i18n";
 import { UserError } from "../../../types";
 
@@ -75,7 +75,7 @@ const StaffAddMemberDialog = withStyles(styles, {
     onClose,
     onConfirm
   }: StaffAddMemberDialogProps) => (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog open={open}>
       <Form errors={errors} initial={initialForm} onSubmit={onConfirm}>
         {({ change, data, errors: formErrors, hasChanged }) => (
           <>

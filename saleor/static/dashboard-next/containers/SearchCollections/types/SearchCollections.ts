@@ -27,7 +27,5 @@ export interface SearchCollections {
 }
 
 export interface SearchCollectionsVariables {
-  after?: string | null;
-  first: number;
   query: string;
 }

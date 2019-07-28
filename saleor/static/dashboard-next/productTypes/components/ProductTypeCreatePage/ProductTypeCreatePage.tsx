@@ -1,15 +1,15 @@
-import React from "react";
+import * as React from "react";
 
-import AppHeader from "@saleor/components/AppHeader";
-import CardSpacer from "@saleor/components/CardSpacer";
-import { ConfirmButtonTransitionState } from "@saleor/components/ConfirmButton";
-import Container from "@saleor/components/Container";
-import Form from "@saleor/components/Form";
-import Grid from "@saleor/components/Grid";
-import PageHeader from "@saleor/components/PageHeader";
-import SaveButtonBar from "@saleor/components/SaveButtonBar";
+import AppHeader from "../../../components/AppHeader";
+import CardSpacer from "../../../components/CardSpacer";
+import { ConfirmButtonTransitionState } from "../../../components/ConfirmButton/ConfirmButton";
+import Container from "../../../components/Container";
+import Form from "../../../components/Form";
+import Grid from "../../../components/Grid";
+import PageHeader from "../../../components/PageHeader";
+import SaveButtonBar from "../../../components/SaveButtonBar";
 import i18n from "../../../i18n";
-import { WeightUnitsEnum } from "../../../types/globalTypes";
+import { TaxRateType, WeightUnitsEnum } from "../../../types/globalTypes";
 import ProductTypeDetails from "../ProductTypeDetails/ProductTypeDetails";
 import ProductTypeShipping from "../ProductTypeShipping/ProductTypeShipping";
 import ProductTypeTaxes from "../ProductTypeTaxes/ProductTypeTaxes";
@@ -18,10 +18,7 @@ export interface ProductTypeForm {
   chargeTaxes: boolean;
   name: string;
   isShippingRequired: boolean;
-  taxType: {
-    label: string;
-    value: string;
-  };
+  taxRate: TaxRateType;
   weight: number;
 }
 
@@ -34,10 +31,6 @@ export interface ProductTypeCreatePageProps {
   disabled: boolean;
   pageTitle: string;
   saveButtonBarState: ConfirmButtonTransitionState;
-  taxTypes: Array<{
-    description: string;
-    taxCode: string;
-  }>;
   onBack: () => void;
   onSubmit: (data: ProductTypeForm) => void;
 }
@@ -50,7 +43,6 @@ const ProductTypeCreatePage: React.StatelessComponent<
   errors,
   pageTitle,
   saveButtonBarState,
-  taxTypes,
   onBack,
   onSubmit
 }: ProductTypeCreatePageProps) => {
@@ -58,10 +50,7 @@ const ProductTypeCreatePage: React.StatelessComponent<
     chargeTaxes: true,
     isShippingRequired: false,
     name: "",
-    taxType: {
-      label: "",
-      value: ""
-    },
+    taxRate: TaxRateType.STANDARD,
     weight: 0
   };
   return (
@@ -82,19 +71,18 @@ const ProductTypeCreatePage: React.StatelessComponent<
                 disabled={disabled}
                 onChange={change}
               />
-              <CardSpacer />
-              <ProductTypeTaxes
-                disabled={disabled}
-                data={data}
-                taxTypes={taxTypes}
-                onChange={change}
-              />
             </div>
             <div>
               <ProductTypeShipping
                 disabled={disabled}
                 data={data}
                 defaultWeightUnit={defaultWeightUnit}
+                onChange={change}
+              />
+              <CardSpacer />
+              <ProductTypeTaxes
+                disabled={disabled}
+                data={data}
                 onChange={change}
               />
             </div>

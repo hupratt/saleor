@@ -8,7 +8,7 @@ import {
   WithStyles
 } from "@material-ui/core/styles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import React from "react";
+import * as React from "react";
 
 const ITEM_HEIGHT = 48;
 

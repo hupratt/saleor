@@ -1,5 +1,5 @@
 import { parse as parseQs } from "qs";
-import React from "react";
+import * as React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
 import { menuListPath, menuPath } from "./urls";

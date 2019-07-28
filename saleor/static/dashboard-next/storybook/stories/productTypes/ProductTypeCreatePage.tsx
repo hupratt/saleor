@@ -1,6 +1,6 @@
 import { Omit } from "@material-ui/core";
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
 import ProductTypeCreatePage, {
   ProductTypeCreatePageProps
@@ -15,8 +15,7 @@ const props: Omit<ProductTypeCreatePageProps, "classes"> = {
   onBack: () => undefined,
   onSubmit: () => undefined,
   pageTitle: "Create product type",
-  saveButtonBarState: "default",
-  taxTypes: []
+  saveButtonBarState: "default"
 };
 
 storiesOf("Views / Product types / Create product type", module)

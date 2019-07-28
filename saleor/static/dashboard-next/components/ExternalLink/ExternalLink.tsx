@@ -1,6 +1,6 @@
 import { createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
 import Typography, { TypographyProps } from "@material-ui/core/Typography";
-import React from "react";
+import * as React from "react";
 
 const styles = createStyles({
   link: {

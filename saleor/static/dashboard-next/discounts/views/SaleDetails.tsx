@@ -1,25 +1,22 @@
 import Button from "@material-ui/core/Button";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import React from "react";
+import * as React from "react";
 
-import ActionDialog from "@saleor/components/ActionDialog";
-import AssignCategoriesDialog from "@saleor/components/AssignCategoryDialog";
-import AssignCollectionDialog from "@saleor/components/AssignCollectionDialog";
-import AssignProductDialog from "@saleor/components/AssignProductDialog";
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useBulkActions from "@saleor/hooks/useBulkActions";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
-import usePaginator, {
-  createPaginationState
-} from "@saleor/hooks/usePaginator";
-import useShop from "@saleor/hooks/useShop";
 import { categoryUrl } from "../../categories/urls";
 import { collectionUrl } from "../../collections/urls";
-import { DEFAULT_INITIAL_SEARCH_DATA, PAGINATE_BY } from "../../config";
-import SearchCategories from "../../containers/SearchCategories";
-import SearchCollections from "../../containers/SearchCollections";
-import SearchProducts from "../../containers/SearchProducts";
+import ActionDialog from "../../components/ActionDialog";
+import AssignCategoriesDialog from "../../components/AssignCategoryDialog";
+import AssignCollectionDialog from "../../components/AssignCollectionDialog";
+import AssignProductDialog from "../../components/AssignProductDialog";
+import { WindowTitle } from "../../components/WindowTitle";
+import { SearchCategoriesProvider } from "../../containers/SearchCategories";
+import { SearchCollectionsProvider } from "../../containers/SearchCollections";
+import { SearchProductsProvider } from "../../containers/SearchProducts";
+import useBulkActions from "../../hooks/useBulkActions";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
+import usePaginator, { createPaginationState } from "../../hooks/usePaginator";
+import useShop from "../../hooks/useShop";
 import i18n from "../../i18n";
 import { decimal, getMutationState, maybe } from "../../misc";
 import { productUrl } from "../../products/urls";
@@ -44,6 +41,8 @@ import {
   SaleUrlDialog,
   SaleUrlQueryParams
 } from "../urls";
+
+const PAGINATE_BY = 20;
 
 interface SaleDetailsProps {
   id: string;
@@ -326,26 +325,21 @@ export const SaleDetails: React.StatelessComponent<SaleDetailsProps> = ({
                               toggle={toggle}
                               toggleAll={toggleAll}
                             />
-                            <SearchProducts
-                              variables={DEFAULT_INITIAL_SEARCH_DATA}
-                            >
-                              {({
-                                search: searchProducts,
-                                result: searchProductsOpts
-                              }) => (
+                            <SearchProductsProvider>
+                              {(searchProducts, searchProductsOpts) => (
                                 <AssignProductDialog
                                   confirmButtonState={assignTransitionState}
                                   open={params.action === "assign-product"}
                                   onFetch={searchProducts}
                                   loading={searchProductsOpts.loading}
                                   onClose={closeModal}
-                                  onSubmit={products =>
+                                  onSubmit={formData =>
                                     saleCataloguesAdd({
                                       variables: {
                                         ...paginationState,
                                         id,
                                         input: {
-                                          products: products.map(
+                                          products: formData.products.map(
                                             product => product.id
                                           )
                                         }
@@ -361,14 +355,9 @@ export const SaleDetails: React.StatelessComponent<SaleDetailsProps> = ({
                                   )}
                                 />
                               )}
-                            </SearchProducts>
-                            <SearchCategories
-                              variables={DEFAULT_INITIAL_SEARCH_DATA}
-                            >
-                              {({
-                                search: searchCategories,
-                                result: searchCategoriesOpts
-                              }) => (
+                            </SearchProductsProvider>
+                            <SearchCategoriesProvider>
+                              {(searchCategories, searchCategoriesOpts) => (
                                 <AssignCategoriesDialog
                                   categories={maybe(() =>
                                     searchCategoriesOpts.data.categories.edges
@@ -383,13 +372,13 @@ export const SaleDetails: React.StatelessComponent<SaleDetailsProps> = ({
                                   onFetch={searchCategories}
                                   loading={searchCategoriesOpts.loading}
                                   onClose={closeModal}
-                                  onSubmit={categories =>
+                                  onSubmit={formData =>
                                     saleCataloguesAdd({
                                       variables: {
                                         ...paginationState,
                                         id,
                                         input: {
-                                          categories: categories.map(
+                                          categories: formData.categories.map(
                                             product => product.id
                                           )
                                         }
@@ -398,14 +387,9 @@ export const SaleDetails: React.StatelessComponent<SaleDetailsProps> = ({
                                   }
                                 />
                               )}
-                            </SearchCategories>
-                            <SearchCollections
-                              variables={DEFAULT_INITIAL_SEARCH_DATA}
-                            >
-                              {({
-                                search: searchCollections,
-                                result: searchCollectionsOpts
-                              }) => (
+                            </SearchCategoriesProvider>
+                            <SearchCollectionsProvider>
+                              {(searchCollections, searchCollectionsOpts) => (
                                 <AssignCollectionDialog
                                   collections={maybe(() =>
                                     searchCollectionsOpts.data.collections.edges
@@ -420,13 +404,13 @@ export const SaleDetails: React.StatelessComponent<SaleDetailsProps> = ({
                                   onFetch={searchCollections}
                                   loading={searchCollectionsOpts.loading}
                                   onClose={closeModal}
-                                  onSubmit={collections =>
+                                  onSubmit={formData =>
                                     saleCataloguesAdd({
                                       variables: {
                                         ...paginationState,
                                         id,
                                         input: {
-                                          collections: collections.map(
+                                          collections: formData.collections.map(
                                             product => product.id
                                           )
                                         }
@@ -435,7 +419,7 @@ export const SaleDetails: React.StatelessComponent<SaleDetailsProps> = ({
                                   }
                                 />
                               )}
-                            </SearchCollections>
+                            </SearchCollectionsProvider>
                             <ActionDialog
                               open={params.action === "unassign-category"}
                               title={i18n.t("Unassign Categories From Sale")}

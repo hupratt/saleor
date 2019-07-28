@@ -11,14 +11,14 @@ import TableCell from "@material-ui/core/TableCell";
 import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
+import * as React from "react";
 
-import Checkbox from "@saleor/components/Checkbox";
-import Skeleton from "@saleor/components/Skeleton";
-import TableHead from "@saleor/components/TableHead";
-import TablePagination from "@saleor/components/TablePagination";
+import Checkbox from "../../../components/Checkbox";
+import Skeleton from "../../../components/Skeleton";
+import TableHead from "../../../components/TableHead";
+import TablePagination from "../../../components/TablePagination";
 import i18n from "../../../i18n";
-import { maybe, renderCollection } from "../../../misc";
+import { maybe, renderCollection, translatedTaxRates } from "../../../misc";
 import { ListActions, ListProps } from "../../../types";
 import { ProductTypeList_productTypes_edges_node } from "../../types/ProductTypeList";
 
@@ -114,7 +114,10 @@ const ProductTypeList = withStyles(styles, { name: "ProductTypeList" })(
                     <Checkbox
                       checked={isSelected}
                       disabled={disabled}
-                      onChange={() => toggle(productType.id)}
+                      onClick={event => {
+                        toggle(productType.id);
+                        event.stopPropagation();
+                      }}
                     />
                   </TableCell>
                   <TableCell className={classes.colName}>
@@ -148,8 +151,8 @@ const ProductTypeList = withStyles(styles, { name: "ProductTypeList" })(
                     )}
                   </TableCell>
                   <TableCell className={classes.colTax}>
-                    {maybe(() => productType.taxType) ? (
-                      productType.taxType.description
+                    {maybe(() => productType.taxRate) ? (
+                      translatedTaxRates()[productType.taxRate]
                     ) : (
                       <Skeleton />
                     )}

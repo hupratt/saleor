@@ -1,19 +1,28 @@
-import React from "react";
+import * as React from "react";
 
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
-import useShop from "@saleor/hooks/useShop";
+import { WindowTitle } from "../../components/WindowTitle";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
+import useShop from "../../hooks/useShop";
 import i18n from "../../i18n";
-import { decimal, getMutationState, joinDateTime, maybe } from "../../misc";
+import { decimal, getMutationState, maybe } from "../../misc";
 import {
   DiscountValueTypeEnum,
+  VoucherDiscountValueType,
   VoucherTypeEnum
 } from "../../types/globalTypes";
 import VoucherCreatePage from "../components/VoucherCreatePage";
 import { TypedVoucherCreate } from "../mutations";
 import { VoucherCreate } from "../types/VoucherCreate";
 import { voucherListUrl, voucherUrl } from "../urls";
+
+function discountValueTypeEnum(
+  type: VoucherDiscountValueType
+): DiscountValueTypeEnum {
+  return type.toString() === DiscountValueTypeEnum.FIXED
+    ? DiscountValueTypeEnum.FIXED
+    : DiscountValueTypeEnum.PERCENTAGE;
+}
 
 export const VoucherDetails: React.StatelessComponent = () => {
   const navigate = useNavigator();
@@ -52,29 +61,18 @@ export const VoucherDetails: React.StatelessComponent = () => {
                 voucherCreate({
                   variables: {
                     input: {
-                      applyOncePerOrder: formData.applyOncePerOrder,
                       code: formData.code,
-                      discountValue:
-                        formData.discountType.toString() === "SHIPPING"
-                          ? 100
-                          : decimal(formData.value),
-                      discountValueType:
-                        formData.discountType.toString() === "SHIPPING"
-                          ? DiscountValueTypeEnum.PERCENTAGE
-                          : formData.discountType,
-                      endDate: formData.hasEndDate
-                        ? joinDateTime(formData.endDate, formData.endTime)
-                        : null,
-                      minAmountSpent: parseFloat(formData.minAmountSpent),
-                      startDate: joinDateTime(
-                        formData.startDate,
-                        formData.startTime
+                      discountValue: decimal(formData.value),
+                      discountValueType: discountValueTypeEnum(
+                        formData.discountType
                       ),
-                      type:
-                        formData.discountType.toString() === "SHIPPING"
-                          ? VoucherTypeEnum.ENTIRE_ORDER
-                          : formData.type,
-                      usageLimit: parseInt(formData.usageLimit, 10)
+                      endDate:
+                        formData.endDate === "" ? null : formData.endDate,
+                      minAmountSpent: formData.minAmountSpent,
+                      name: formData.name,
+                      startDate:
+                        formData.startDate === "" ? null : formData.startDate,
+                      type: VoucherTypeEnum[formData.type]
                     }
                   }
                 })

@@ -14,8 +14,8 @@ export interface SearchProducts_products_edges_node_thumbnail {
 export interface SearchProducts_products_edges_node {
   __typename: "Product";
   id: string;
-  name: string;
   thumbnail: SearchProducts_products_edges_node_thumbnail | null;
+  name: string;
 }
 
 export interface SearchProducts_products_edges {
@@ -33,7 +33,5 @@ export interface SearchProducts {
 }
 
 export interface SearchProductsVariables {
-  after?: string | null;
-  first: number;
   query: string;
 }

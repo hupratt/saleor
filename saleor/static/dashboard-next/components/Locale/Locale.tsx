@@ -1,8 +1,8 @@
-import React from "react";
+import * as React from "react";
 
-export const LocaleContext = React.createContext<string>("en");
-
-const { Consumer: LocaleConsumer, Provider } = LocaleContext;
+const { Consumer: LocaleConsumer, Provider } = React.createContext<string>(
+  "en"
+);
 
 const LocaleProvider = ({ children }) => {
   return <Provider value={navigator.language}>{children}</Provider>;

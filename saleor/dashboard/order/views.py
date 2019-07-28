@@ -14,6 +14,7 @@ from django_prices.templatetags import prices_i18n
 
 from ...core.exceptions import InsufficientStock
 from ...core.utils import get_paginator_items
+from ...core.utils.taxes import get_taxes_for_address
 from ...order import OrderStatus, events
 from ...order.emails import (
     send_fulfillment_confirmation_to_customer,
@@ -314,8 +315,9 @@ def orderline_cancel(request, order_pk, line_pk):
 def add_variant_to_order(request, order_pk):
     """Add variant in given quantity to an order."""
     order = get_object_or_404(Order.objects.drafts(), pk=order_pk)
+    taxes = get_taxes_for_address(order.shipping_address)
     form = AddVariantToOrderForm(
-        request.POST or None, order=order, discounts=request.discounts
+        request.POST or None, order=order, discounts=request.discounts, taxes=taxes
     )
     status = 200
     if form.is_valid():
@@ -431,7 +433,8 @@ def order_customer_remove(request, order_pk):
 @permission_required("order.manage_orders")
 def order_shipping_edit(request, order_pk):
     order = get_object_or_404(Order.objects.drafts(), pk=order_pk)
-    form = OrderShippingForm(request.POST or None, instance=order)
+    taxes = get_taxes_for_address(order.shipping_address)
+    form = OrderShippingForm(request.POST or None, instance=order, taxes=taxes)
     status = 200
     if form.is_valid():
         form.save()

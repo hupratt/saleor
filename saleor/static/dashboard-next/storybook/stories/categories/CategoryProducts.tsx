@@ -1,7 +1,7 @@
 import { storiesOf } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 
-import placeholder from "../../../../images/placeholder60x60.png";
+import * as placeholder from "../../../../images/placeholder60x60.png";
 import CategoryProducts from "../../../categories/components/CategoryProducts";
 import Decorator from "../../Decorator";
 

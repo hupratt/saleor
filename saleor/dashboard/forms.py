@@ -2,7 +2,6 @@ import json
 
 from django import forms
 from django.core.exceptions import ValidationError
-from draftjs_sanitizer import SafeJSONEncoder
 
 
 class ModelChoiceOrCreationField(forms.ModelChoiceField):
@@ -68,7 +67,7 @@ class AjaxSelect2ChoiceField(forms.ChoiceField):
             "id": obj_id if obj_id is not None else obj.pk,
             "text": label if label else str(obj),
         }
-        self.widget.attrs["data-initial"] = json.dumps(selected, cls=SafeJSONEncoder)
+        self.widget.attrs["data-initial"] = json.dumps(selected)
 
     def set_fetch_data_url(self, fetch_data_url):
         self.widget.attrs["data-url"] = fetch_data_url
@@ -149,7 +148,7 @@ class AjaxSelect2MultipleChoiceField(forms.MultipleChoiceField):
     def set_initial(self, objects):
         """Set initially selected objects on field's widget."""
         selected = [{"id": obj.pk, "text": str(obj)} for obj in objects]
-        self.widget.attrs["data-initial"] = json.dumps(selected, cls=SafeJSONEncoder)
+        self.widget.attrs["data-initial"] = json.dumps(selected)
 
 
 class PermissionMultipleChoiceField(forms.ModelMultipleChoiceField):

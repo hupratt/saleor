@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import { EditorState, EntityInstance, RichUtils } from "draft-js";
-import React from "react";
+import * as React from "react";
 
 import i18n from "../../i18n";
 import Form from "../Form";
@@ -21,15 +21,15 @@ interface LinkSourceProps {
 }
 
 class LinkSource extends React.Component<LinkSourceProps> {
-  submit = (url: string) => {
+  submit = (href: string) => {
     const { editorState, entityType, onComplete } = this.props;
 
-    if (url) {
+    if (href) {
       const content = editorState.getCurrentContent();
       const contentWithEntity = content.createEntity(
         entityType.type,
         "MUTABLE",
-        { url }
+        { href }
       );
       const entityKey = contentWithEntity.getLastCreatedEntityKey();
       const newEditorState = EditorState.set(editorState, {
@@ -49,23 +49,23 @@ class LinkSource extends React.Component<LinkSourceProps> {
 
   render() {
     const { entity, onClose } = this.props;
-    const initial = entity ? entity.getData().url : "";
+    const initial = entity ? entity.getData().href : "";
 
     return (
-      <Dialog onClose={onClose} open={true} fullWidth maxWidth="sm">
+      <Dialog open={true} fullWidth maxWidth="sm">
         <Form
-          initial={{ url: initial }}
-          onSubmit={({ url }) => this.submit(url)}
+          initial={{ href: initial }}
+          onSubmit={({ href }) => this.submit(href)}
         >
           {({ data, change, submit }) => (
             <>
               <DialogTitle>{i18n.t("Add or Edit Link")}</DialogTitle>
               <DialogContent>
                 <TextField
-                  name="url"
+                  name="href"
                   fullWidth
                   label={i18n.t("URL Linked")}
-                  value={data.url}
+                  value={data.href}
                   onChange={change}
                 />
               </DialogContent>

@@ -9,13 +9,13 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
-import React from "react";
+import * as React from "react";
 
-import TableCellAvatar from "@saleor/components/TableCellAvatar";
-import i18n from "@saleor/i18n";
-import { maybe, renderCollection } from "@saleor/misc";
-import { ListActions, ListProps } from "@saleor/types";
 import { CategoryDetails_category_products_edges_node } from "../../categories/types/CategoryDetails";
+import TableCellAvatar from "../../components/TableCellAvatar";
+import i18n from "../../i18n";
+import { maybe, renderCollection } from "../../misc";
+import { ListActions, ListProps } from "../../types";
 import Checkbox from "../Checkbox";
 import Money from "../Money";
 import Skeleton from "../Skeleton";
@@ -71,7 +71,6 @@ interface ProductListProps
 export const ProductList = withStyles(styles, { name: "ProductList" })(
   ({
     classes,
-    settings,
     disabled,
     isChecked,
     pageInfo,
@@ -82,7 +81,6 @@ export const ProductList = withStyles(styles, { name: "ProductList" })(
     toolbar,
     onNextPage,
     onPreviousPage,
-    onUpdateListSettings,
     onRowClick
   }: ProductListProps) => (
     <Table>
@@ -111,10 +109,8 @@ export const ProductList = withStyles(styles, { name: "ProductList" })(
         <TableRow>
           <TablePagination
             colSpan={6}
-            settings={settings}
             hasNextPage={pageInfo && !disabled ? pageInfo.hasNextPage : false}
             onNextPage={onNextPage}
-            onUpdateListSettings={onUpdateListSettings}
             hasPreviousPage={
               pageInfo && !disabled ? pageInfo.hasPreviousPage : false
             }
@@ -140,7 +136,10 @@ export const ProductList = withStyles(styles, { name: "ProductList" })(
                   <Checkbox
                     checked={isSelected}
                     disabled={disabled}
-                    onChange={() => toggle(product.id)}
+                    onClick={event => {
+                      event.stopPropagation();
+                      toggle(product.id);
+                    }}
                   />
                 </TableCell>
                 <TableCellAvatar

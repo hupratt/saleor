@@ -5,10 +5,10 @@ from unittest.mock import patch
 import pytest
 from django.urls import reverse
 from phonenumber_field.phonenumber import PhoneNumber
-from prices import Money, TaxedMoney
+from prices import Money
 
 from saleor.checkout import AddressType
-from saleor.core.taxes import zero_money, zero_taxed_money
+from saleor.core.utils.taxes import ZERO_MONEY, ZERO_TAXED_MONEY
 from saleor.dashboard.order.forms import ChangeQuantityForm
 from saleor.dashboard.order.utils import (
     remove_customer_from_order,
@@ -779,7 +779,9 @@ def test_view_order_customer_remove(admin_client, draft_order):
     assert not draft_order.shipping_address
 
 
-def test_view_order_shipping_edit(admin_client, draft_order, shipping_zone, settings):
+def test_view_order_shipping_edit(
+    admin_client, draft_order, shipping_zone, settings, vatlayer
+):
     method = shipping_zone.shipping_methods.create(
         price=Money(5, settings.DEFAULT_CURRENCY), name="DHL"
     )
@@ -795,8 +797,7 @@ def test_view_order_shipping_edit(admin_client, draft_order, shipping_zone, sett
     assert get_redirect_location(response) == redirect_url
     draft_order.refresh_from_db()
     assert draft_order.shipping_method_name == method.name
-    shipping_price = method.get_total()
-    assert draft_order.shipping_price == TaxedMoney(shipping_price, shipping_price)
+    assert draft_order.shipping_price == method.get_total(taxes=vatlayer)
     assert draft_order.shipping_method == method
 
 
@@ -858,7 +859,7 @@ def test_view_order_shipping_remove(admin_client, draft_order):
     draft_order.refresh_from_db()
     assert not draft_order.shipping_method
     assert not draft_order.shipping_method_name
-    assert draft_order.shipping_price == zero_taxed_money()
+    assert draft_order.shipping_price == ZERO_TAXED_MONEY
 
 
 def test_view_remove_draft_order(admin_client, draft_order):
@@ -1019,7 +1020,7 @@ def test_view_order_voucher_remove(admin_client, draft_order, settings, voucher)
     assert get_redirect_location(response) == redirect_url
 
     draft_order.refresh_from_db()
-    assert draft_order.discount_amount == zero_money()
+    assert draft_order.discount_amount == ZERO_MONEY
     assert draft_order.total == total_before + discount_amount
 
 

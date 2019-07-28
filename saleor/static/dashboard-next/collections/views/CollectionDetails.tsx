@@ -1,18 +1,15 @@
 import Button from "@material-ui/core/Button";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import React from "react";
+import * as React from "react";
 
-import ActionDialog from "@saleor/components/ActionDialog";
-import AssignProductDialog from "@saleor/components/AssignProductDialog";
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useBulkActions from "@saleor/hooks/useBulkActions";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
-import usePaginator, {
-  createPaginationState
-} from "@saleor/hooks/usePaginator";
-import { DEFAULT_INITIAL_SEARCH_DATA, PAGINATE_BY } from "../../config";
-import SearchProducts from "../../containers/SearchProducts";
+import ActionDialog from "../../components/ActionDialog";
+import AssignProductDialog from "../../components/AssignProductDialog";
+import { WindowTitle } from "../../components/WindowTitle";
+import { SearchProductsProvider } from "../../containers/SearchProducts";
+import useBulkActions from "../../hooks/useBulkActions";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
+import usePaginator, { createPaginationState } from "../../hooks/usePaginator";
 import i18n from "../../i18n";
 import { getMutationState, maybe } from "../../misc";
 import { productUrl } from "../../products/urls";
@@ -37,6 +34,8 @@ interface CollectionDetailsProps {
   id: string;
   params: CollectionUrlQueryParams;
 }
+
+const PAGINATE_BY = 20;
 
 export const CollectionDetails: React.StatelessComponent<
   CollectionDetailsProps
@@ -145,12 +144,11 @@ export const CollectionDetails: React.StatelessComponent<
               const handleSubmit = (
                 formData: CollectionDetailsPageFormData
               ) => {
-                const input: CollectionInput = {
+                const input = {
                   backgroundImageAlt: formData.backgroundImageAlt,
                   descriptionJson: JSON.stringify(formData.description),
                   isPublished: formData.isPublished,
                   name: formData.name,
-                  publicationDate: formData.publicationDate,
                   seo: {
                     description: formData.seoDescription,
                     title: formData.seoTitle
@@ -280,29 +278,31 @@ export const CollectionDetails: React.StatelessComponent<
                     toggle={toggle}
                     toggleAll={toggleAll}
                   />
-                  <SearchProducts variables={DEFAULT_INITIAL_SEARCH_DATA}>
-                    {({ search, result }) => (
+                  <SearchProductsProvider>
+                    {(searchProducts, searchProductsOpts) => (
                       <AssignProductDialog
                         confirmButtonState={assignTransitionState}
                         open={params.action === "assign"}
-                        onFetch={search}
-                        loading={result.loading}
-                        onClose={closeModal}
-                        onSubmit={products =>
+                        onFetch={searchProducts}
+                        loading={searchProductsOpts.loading}
+                        onClose={() => navigate(collectionUrl(id), true, true)}
+                        onSubmit={formData =>
                           assignProduct.mutate({
                             ...paginationState,
                             collectionId: id,
-                            productIds: products.map(product => product.id)
+                            productIds: formData.products.map(
+                              product => product.id
+                            )
                           })
                         }
                         products={maybe(() =>
-                          result.data.products.edges
+                          searchProductsOpts.data.products.edges
                             .map(edge => edge.node)
                             .filter(suggestedProduct => suggestedProduct.id)
                         )}
                       />
                     )}
-                  </SearchProducts>
+                  </SearchProductsProvider>
                   <ActionDialog
                     confirmButtonState={removeTransitionState}
                     onClose={closeModal}

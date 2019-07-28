@@ -1,24 +1,35 @@
-import gql from "graphql-tag";
-
-import BaseSearch from "../BaseSearch";
+import * as React from "react";
+import { QueryResult } from "react-apollo";
+import { TypedSearchCategoriesQuery } from "./query";
 import {
   SearchCategories,
   SearchCategoriesVariables
 } from "./types/SearchCategories";
 
-export const searchCategories = gql`
-  query SearchCategories($after: String, $first: Int!, $query: String!) {
-    categories(after: $after, first: $first, query: $query) {
-      edges {
-        node {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
+interface SearchCategoriesProviderProps {
+  children: ((
+    search: (query: string) => void,
+    searchOpts: QueryResult<SearchCategories, SearchCategoriesVariables>
+  ) => React.ReactElement<any>);
+}
+interface SearchCategoriesProviderState {
+  query: string;
+}
 
-export default BaseSearch<SearchCategories, SearchCategoriesVariables>(
-  searchCategories
-);
+export class SearchCategoriesProvider extends React.Component<
+  SearchCategoriesProviderProps,
+  SearchCategoriesProviderState
+> {
+  state: SearchCategoriesProviderState = { query: "" };
+
+  search = (query: string) => this.setState({ query });
+
+  render() {
+    const { children } = this.props;
+    return (
+      <TypedSearchCategoriesQuery variables={{ query: this.state.query }}>
+        {searchOpts => children(this.search, searchOpts)}
+      </TypedSearchCategoriesQuery>
+    );
+  }
+}

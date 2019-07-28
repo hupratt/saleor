@@ -2,10 +2,10 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import React from "react";
+import * as React from "react";
 
-import CardTitle from "@saleor/components/CardTitle";
-import { FormSpacer } from "@saleor/components/FormSpacer";
+import CardTitle from "../../../components/CardTitle";
+import { FormSpacer } from "../../../components/FormSpacer";
 import i18n from "../../../i18n";
 
 export interface CustomerCreateNoteProps {

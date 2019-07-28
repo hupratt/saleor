@@ -1,5 +1,5 @@
 import createSvgIcon from "@material-ui/icons/utils/createSvgIcon";
-import React from "react";
+import * as React from "react";
 
 export const Orders = createSvgIcon(
   <>
@@ -18,7 +18,7 @@ export const Orders = createSvgIcon(
         y2="40.6161"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stopColor="#06847B" />
+        <stop stopColor="#13BEBB" />
         <stop offset="1" stopColor="#3EE7CD" />
       </linearGradient>
     </defs>

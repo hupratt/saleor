@@ -179,7 +179,3 @@ def get_country_name_by_code(country_code):
         country_code,
     )
     return country_name
-
-
-def get_company_address():
-    return Site.objects.get_current().settings.company_address

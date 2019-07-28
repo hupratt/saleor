@@ -10,13 +10,13 @@ import {
   withStyles,
   WithStyles
 } from "@material-ui/core/styles";
-import React from "react";
+import * as React from "react";
 
 import ConfirmButton, {
   ConfirmButtonTransitionState
-} from "@saleor/components/ConfirmButton";
-import ControlledCheckbox from "@saleor/components/ControlledCheckbox";
-import Form from "@saleor/components/Form";
+} from "../../../components/ConfirmButton/ConfirmButton";
+import ControlledCheckbox from "../../../components/ControlledCheckbox";
+import Form from "../../../components/Form";
 import i18n from "../../../i18n";
 
 export interface FormData {
@@ -51,7 +51,7 @@ const OrderCancelDialog = withStyles(styles, { name: "OrderCancelDialog" })(
     onSubmit,
     onClose
   }: OrderCancelDialogProps) => (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog open={open}>
       <Form
         initial={{
           restock: true

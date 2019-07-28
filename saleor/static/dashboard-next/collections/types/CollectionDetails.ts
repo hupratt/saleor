@@ -58,7 +58,6 @@ export interface CollectionDetails_collection {
   name: string;
   backgroundImage: CollectionDetails_collection_backgroundImage | null;
   descriptionJson: any;
-  publicationDate: any | null;
   seoDescription: string | null;
   seoTitle: string | null;
   products: CollectionDetails_collection_products | null;

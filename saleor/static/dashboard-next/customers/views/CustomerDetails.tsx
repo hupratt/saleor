@@ -1,13 +1,13 @@
 import DialogContentText from "@material-ui/core/DialogContentText";
-import React from "react";
+import * as React from "react";
 
-import ActionDialog from "@saleor/components/ActionDialog";
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
+import ActionDialog from "../../components/ActionDialog";
+import { WindowTitle } from "../../components/WindowTitle";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
 import i18n from "../../i18n";
 import { getMutationState, maybe } from "../../misc";
-import { orderListUrl, orderUrl } from "../../orders/urls";
+import { orderUrl } from "../../orders/urls";
 import CustomerDetailsPage from "../components/CustomerDetailsPage/CustomerDetailsPage";
 import {
   TypedRemoveCustomerMutation,
@@ -120,13 +120,7 @@ export const CustomerDetailsView: React.StatelessComponent<
                           })
                         )
                       }
-                      onViewAllOrdersClick={() =>
-                        navigate(
-                          orderListUrl({
-                            email: maybe(() => customerDetails.data.user.email)
-                          })
-                        )
-                      }
+                      onViewAllOrdersClick={() => undefined} // TODO: add filters to order #3172
                     />
                     <ActionDialog
                       confirmButtonState={removeTransitionState}

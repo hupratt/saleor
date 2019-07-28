@@ -5,8 +5,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select, { SelectProps } from "@material-ui/core/Select";
 import { createStyles, withStyles, WithStyles } from "@material-ui/core/styles";
-import classNames from "classnames";
-import React from "react";
+import * as React from "react";
 
 import i18n from "../../i18n";
 
@@ -21,14 +20,12 @@ interface SingleSelectFieldProps extends WithStyles<typeof styles> {
     value: string;
     label: string | React.ReactNode;
   }>;
-  className?: string;
   disabled?: boolean;
   error?: boolean;
   hint?: string;
   label?: string;
   name?: string;
   selectProps?: SelectProps;
-  placeholder?: string;
   value?: string;
   onChange(event: any);
 }
@@ -37,7 +34,6 @@ export const SingleSelectField = withStyles(styles, {
   name: "SingleSelectField"
 })(
   ({
-    className,
     classes,
     disabled,
     error,
@@ -47,8 +43,7 @@ export const SingleSelectField = withStyles(styles, {
     onChange,
     name,
     hint,
-    selectProps,
-    placeholder
+    selectProps
   }: SingleSelectFieldProps) => {
     const choicesByKey: { [key: string]: string } =
       choices === undefined
@@ -60,7 +55,7 @@ export const SingleSelectField = withStyles(styles, {
 
     return (
       <FormControl
-        className={classNames(classes.formControl, className)}
+        className={classes.formControl}
         error={error}
         disabled={disabled}
       >
@@ -69,7 +64,7 @@ export const SingleSelectField = withStyles(styles, {
           variant="filled"
           fullWidth
           renderValue={choiceValue =>
-            choiceValue ? choicesByKey[choiceValue.toString()] : placeholder
+            choiceValue ? choicesByKey[choiceValue.toString()] : ""
           }
           value={value || ""}
           onChange={onChange}

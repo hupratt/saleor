@@ -1,10 +1,10 @@
-import React from "react";
+import * as React from "react";
 
-import { WindowTitle } from "@saleor/components/WindowTitle";
-import useNavigator from "@saleor/hooks/useNavigator";
-import useNotifier from "@saleor/hooks/useNotifier";
+import { WindowTitle } from "../../components/WindowTitle";
+import useNavigator from "../../hooks/useNavigator";
+import useNotifier from "../../hooks/useNotifier";
 import i18n from "../../i18n";
-import { getMutationState, maybe } from "../../misc";
+import { maybe } from "../../misc";
 import ProductTypeCreatePage, {
   ProductTypeForm
 } from "../components/ProductTypeCreatePage";
@@ -29,9 +29,8 @@ export const ProductTypeCreate: React.StatelessComponent = () => {
     <TypedProductTypeCreateMutation onCompleted={handleCreateSuccess}>
       {(
         createProductType,
-        { called, loading, data: createProductTypeData }
+        { loading: loadingCreate, data: createProductTypeData }
       ) => {
-        const formTransitionState = getMutationState(loading, called);
         const handleCreate = (formData: ProductTypeForm) =>
           createProductType({
             variables: {
@@ -39,7 +38,7 @@ export const ProductTypeCreate: React.StatelessComponent = () => {
                 hasVariants: false,
                 isShippingRequired: formData.isShippingRequired,
                 name: formData.name,
-                taxCode: formData.taxType.value,
+                taxRate: formData.chargeTaxes ? formData.taxRate : null,
                 weight: formData.weight
               }
             }
@@ -51,7 +50,7 @@ export const ProductTypeCreate: React.StatelessComponent = () => {
                 <WindowTitle title={i18n.t("Create product type")} />
                 <ProductTypeCreatePage
                   defaultWeightUnit={maybe(() => data.shop.defaultWeightUnit)}
-                  disabled={loading}
+                  disabled={loadingCreate || loading}
                   errors={
                     createProductTypeData
                       ? createProductTypeData.productTypeCreate.errors
@@ -60,8 +59,7 @@ export const ProductTypeCreate: React.StatelessComponent = () => {
                   pageTitle={i18n.t("Create Product Type", {
                     context: "page title"
                   })}
-                  saveButtonBarState={formTransitionState}
-                  taxTypes={maybe(() => data.taxTypes, [])}
+                  saveButtonBarState={loadingCreate ? "loading" : "default"}
                   onBack={() => navigate(productTypeListUrl())}
                   onSubmit={handleCreate}
                 />

@@ -1,24 +1,35 @@
-import gql from "graphql-tag";
-
-import BaseSearch from "../BaseSearch";
+import * as React from "react";
+import { QueryResult } from "react-apollo";
+import { TypedSearchCollectionsQuery } from "./query";
 import {
   SearchCollections,
   SearchCollectionsVariables
 } from "./types/SearchCollections";
 
-export const searchCollections = gql`
-  query SearchCollections($after: String, $first: Int!, $query: String!) {
-    collections(after: $after, first: $first, query: $query) {
-      edges {
-        node {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
+interface SearchCollectionsProviderProps {
+  children: ((
+    search: (query: string) => void,
+    searchOpts: QueryResult<SearchCollections, SearchCollectionsVariables>
+  ) => React.ReactElement<any>);
+}
+interface SearchCollectionsProviderState {
+  query: string;
+}
 
-export default BaseSearch<SearchCollections, SearchCollectionsVariables>(
-  searchCollections
-);
+export class SearchCollectionsProvider extends React.Component<
+  SearchCollectionsProviderProps,
+  SearchCollectionsProviderState
+> {
+  state: SearchCollectionsProviderState = { query: "" };
+
+  search = (query: string) => this.setState({ query });
+
+  render() {
+    const { children } = this.props;
+    return (
+      <TypedSearchCollectionsQuery variables={{ query: this.state.query }}>
+        {searchOpts => children(this.search, searchOpts)}
+      </TypedSearchCollectionsQuery>
+    );
+  }
+}

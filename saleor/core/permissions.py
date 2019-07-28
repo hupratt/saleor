@@ -5,7 +5,6 @@ MODELS_PERMISSIONS = [
     "account.manage_staff",
     "account.impersonate_users",
     "discount.manage_discounts",
-    "giftcard.manage_gift_card",
     "menu.manage_menus",
     "order.manage_orders",
     "page.manage_pages",

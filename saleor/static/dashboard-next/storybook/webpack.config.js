@@ -1,8 +1,7 @@
 /* eslint-disable */
-const CheckerPlugin = require("fork-ts-checker-webpack-plugin");
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const CheckerPlugin = require('fork-ts-checker-webpack-plugin');
 
-module.exports = ({ config }) => {
+module.exports = (baseConfig, env, config) => {
   config.module.rules.push({
     test: /\.tsx?$/,
     exclude: /node_modules/,
@@ -16,11 +15,6 @@ module.exports = ({ config }) => {
   config.optimization.removeEmptyChunks = false;
   config.optimization.splitChunks = false;
   config.resolve.extensions.push(".ts", ".tsx");
-  config.resolve.plugins = [
-    new TsconfigPathsPlugin({
-      configFile: "./tsconfig.json"
-    })
-  ];
   config.plugins.push(new CheckerPlugin());
   return config;
 };

@@ -6,15 +6,15 @@ from django_countries import countries
 from django_prices.forms import MoneyField
 from mptt.forms import TreeNodeMultipleChoiceField
 
-from ...core.taxes import zero_money
-from ...core.utils.promo_code import generate_promo_code
+from ...core.utils.taxes import ZERO_MONEY
 from ...discount import DiscountValueType
 from ...discount.models import Sale, Voucher
+from ...discount.utils import generate_voucher_code
 from ...product.models import Category, Product
 from ..forms import AjaxSelect2MultipleChoiceField
 
 MinAmountSpent = MoneyField(
-    min_value=zero_money(),
+    min_value=ZERO_MONEY,
     required=False,
     currency=settings.DEFAULT_CURRENCY,
     label=pgettext_lazy(
@@ -93,9 +93,6 @@ class VoucherForm(forms.ModelForm):
             "name": pgettext_lazy("Item name", "Name"),
             "code": pgettext_lazy("Coupon code", "Code"),
             "usage_limit": pgettext_lazy("Usage limit", "Usage limit"),
-            "min_checkout_items_quantity": pgettext_lazy(
-                "Voucher: discount with", "Minimal quantity of products"
-            ),
             "start_date": pgettext_lazy("Voucher date restrictions", "Start date"),
             "end_date": pgettext_lazy("Voucher date restrictions", "End date"),
             "discount_value_type": pgettext_lazy(
@@ -110,7 +107,7 @@ class VoucherForm(forms.ModelForm):
         initial = kwargs.get("initial", {})
         instance = kwargs.get("instance")
         if instance and instance.id is None and not initial.get("code"):
-            initial["code"] = generate_promo_code()
+            initial["code"] = generate_voucher_code()
         kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
@@ -128,15 +125,15 @@ class ShippingVoucherForm(forms.ModelForm):
 
     class Meta:
         model = Voucher
-        fields = ["countries", "min_amount_spent", "min_checkout_items_quantity"]
+        fields = ["countries", "min_amount_spent"]
 
 
-class EntireOrderVoucherForm(forms.ModelForm):
+class ValueVoucherForm(forms.ModelForm):
     min_amount_spent = MinAmountSpent
 
     class Meta:
         model = Voucher
-        fields = ["min_amount_spent", "min_checkout_items_quantity"]
+        fields = ["min_amount_spent"]
 
     def save(self, commit=True):
         self.instance.category = None
@@ -162,47 +159,6 @@ class CommonVoucherForm(forms.ModelForm):
     )
 
 
-class SpecificProductVoucherForm(CommonVoucherForm):
-    products = AjaxSelect2MultipleChoiceField(
-        queryset=Product.objects.all(),
-        fetch_data_url=reverse_lazy("dashboard:ajax-products"),
-        required=True,
-        label=pgettext_lazy(
-            "Products that can be discounted with the voucher", "Products"
-        ),
-    )
-    categories = TreeNodeMultipleChoiceField(
-        queryset=Category.objects.all(),
-        required=True,
-        label=pgettext_lazy(
-            "Categories that can be discounted with the voucher", "Categories"
-        ),
-    )
-
-    class Meta:
-        model = Voucher
-        fields = [
-            "products",
-            "collections",
-            "categories",
-            "apply_once_per_order",
-            "min_amount_spent",
-            "min_checkout_items_quantity",
-        ]
-        labels = {
-            "collections": pgettext_lazy(
-                "Collections that can be discounted with the voucher", "Collections"
-            )
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields["products"].set_initial(self.instance.products.all())
-        self.fields["categories"].required = False
-        self.fields["products"].required = False
-
-
 class ProductVoucherForm(CommonVoucherForm):
     products = AjaxSelect2MultipleChoiceField(
         queryset=Product.objects.all(),
@@ -213,12 +169,7 @@ class ProductVoucherForm(CommonVoucherForm):
 
     class Meta:
         model = Voucher
-        fields = [
-            "products",
-            "apply_once_per_order",
-            "min_amount_spent",
-            "min_checkout_items_quantity",
-        ]
+        fields = ["products", "apply_once_per_order"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,12 +180,7 @@ class ProductVoucherForm(CommonVoucherForm):
 class CollectionVoucherForm(CommonVoucherForm):
     class Meta:
         model = Voucher
-        fields = [
-            "collections",
-            "apply_once_per_order",
-            "min_amount_spent",
-            "min_checkout_items_quantity",
-        ]
+        fields = ["collections", "apply_once_per_order"]
         labels = {"collections": pgettext_lazy("Collections", "Collections")}
 
     def __init__(self, *args, **kwargs):
@@ -251,9 +197,4 @@ class CategoryVoucherForm(CommonVoucherForm):
 
     class Meta:
         model = Voucher
-        fields = [
-            "categories",
-            "apply_once_per_order",
-            "min_amount_spent",
-            "min_checkout_items_quantity",
-        ]
+        fields = ["categories", "apply_once_per_order"]

@@ -15,4 +15,3 @@ import './components/product-filters';
 import './components/sorter';
 import './components/styleguide';
 import './components/variant-picker';
-import './components/description-json';

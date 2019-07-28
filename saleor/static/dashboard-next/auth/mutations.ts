@@ -16,9 +16,6 @@ export const fragmentUser = gql`
       code
       name
     }
-    avatar {
-      url
-    }
   }
 `;
 

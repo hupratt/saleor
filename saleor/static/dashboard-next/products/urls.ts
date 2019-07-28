@@ -1,7 +1,8 @@
 import { stringify as stringifyQs } from "qs";
-import urlJoin from "url-join";
+import * as urlJoin from "url-join";
 
-import { ActiveTab, BulkAction, Dialog, Filters, Pagination } from "../types";
+import { BulkAction, Dialog, Pagination } from "../types";
+import { StockAvailability } from "../types/globalTypes";
 
 const productSection = "/products/";
 
@@ -9,25 +10,14 @@ export const productAddPath = urlJoin(productSection, "add");
 export const productAddUrl = productAddPath;
 
 export const productListPath = productSection;
-export type ProductListUrlDialog =
-  | "publish"
-  | "unpublish"
-  | "delete"
-  | "save-search"
-  | "delete-search";
-export enum ProductListUrlFiltersEnum {
-  isPublished = "isPublished",
-  priceFrom = "priceFrom",
-  priceTo = "priceTo",
-  status = "status",
-  query = "query"
-}
-export type ProductListUrlFilters = Filters<ProductListUrlFiltersEnum>;
+export type ProductListUrlDialog = "publish" | "unpublish" | "delete";
+export type ProductListUrlFilters = Partial<{
+  status: StockAvailability;
+}>;
 export type ProductListUrlQueryParams = BulkAction &
   Dialog<ProductListUrlDialog> &
-  ProductListUrlFilters &
   Pagination &
-  ActiveTab;
+  ProductListUrlFilters;
 export const productListUrl = (params?: ProductListUrlQueryParams): string =>
   productListPath + "?" + stringifyQs(params);
 

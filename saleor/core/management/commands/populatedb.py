@@ -9,7 +9,6 @@ from django.db import connection
 from ...utils import create_superuser
 from ...utils.random_data import (
     add_address_to_admin,
-    create_gift_card,
     create_menus,
     create_orders,
     create_page,
@@ -97,8 +96,6 @@ class Command(BaseCommand):
         for msg in create_product_sales(5):
             self.stdout.write(msg)
         for msg in create_vouchers():
-            self.stdout.write(msg)
-        for msg in create_gift_card():
             self.stdout.write(msg)
         for msg in create_users(20):
             self.stdout.write(msg)

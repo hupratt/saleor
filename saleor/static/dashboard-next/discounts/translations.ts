@@ -1,8 +1,10 @@
 import i18n from "../i18n";
-import { VoucherTypeEnum } from "../types/globalTypes";
+import { VoucherType } from "../types/globalTypes";
 
 export const translateVoucherTypes = () => ({
-  [VoucherTypeEnum.SHIPPING]: i18n.t("Shipment"),
-  [VoucherTypeEnum.ENTIRE_ORDER]: i18n.t("Entire order"),
-  [VoucherTypeEnum.SPECIFIC_PRODUCT]: i18n.t("Specific Products")
+  [VoucherType.CATEGORY]: i18n.t("Selected Categories"),
+  [VoucherType.COLLECTION]: i18n.t("Selected Collections"),
+  [VoucherType.PRODUCT]: i18n.t("Selected Products"),
+  [VoucherType.SHIPPING]: i18n.t("Shipment"),
+  [VoucherType.VALUE]: i18n.t("All Products")
 });

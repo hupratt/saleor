@@ -1,6 +1,14 @@
 import gql from "graphql-tag";
 
 import { TypedQuery } from "../queries";
+import {
+  CategorySearch,
+  CategorySearchVariables
+} from "./types/CategorySearch";
+import {
+  CollectionSearch,
+  CollectionSearchVariables
+} from "./types/CollectionSearch";
 import { ProductCreateData } from "./types/ProductCreateData";
 import {
   ProductDetails,
@@ -209,14 +217,14 @@ const productListQuery = gql`
     $after: String
     $last: Int
     $before: String
-    $filter: ProductFilterInput
+    $stockAvailability: StockAvailability
   ) {
     products(
       before: $before
       after: $after
       first: $first
       last: $last
-      filter: $filter
+      stockAvailability: $stockAvailability
     ) {
       edges {
         node {
@@ -356,3 +364,37 @@ export const TypedProductImageQuery = TypedQuery<
   ProductImageById,
   ProductImageByIdVariables
 >(productImageQuery);
+
+const categorySearch = gql`
+  query CategorySearch($query: String) {
+    categories(first: 5, query: $query) {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+export const TypedCategorySearchQuery = TypedQuery<
+  CategorySearch,
+  CategorySearchVariables
+>(categorySearch);
+
+const collectionSearch = gql`
+  query CollectionSearch($query: String) {
+    collections(first: 5, query: $query) {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+export const TypedCollectionSearchQuery = TypedQuery<
+  CollectionSearch,
+  CollectionSearchVariables
+>(collectionSearch);

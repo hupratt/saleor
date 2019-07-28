@@ -1,8 +1,7 @@
 import Tooltip from "@material-ui/core/Tooltip";
-import moment from "moment-timezone";
-import React from "react";
+import * as moment from "moment-timezone";
+import * as React from "react";
 
-import useDateLocalize from "@saleor/hooks/useDateLocalize";
 import { LocaleConsumer } from "../Locale";
 import { Consumer } from "./DateContext";
 
@@ -11,8 +10,11 @@ interface DateProps {
   plain?: boolean;
 }
 
-export const Date: React.FC<DateProps> = ({ date, plain }) => {
-  const localizeDate = useDateLocalize();
+export const Date: React.StatelessComponent<DateProps> = ({ date, plain }) => {
+  const getTitle = (value: string, locale: string) =>
+    moment(value)
+      .locale(locale)
+      .format("ll");
   const getHumanized = (value: string, locale: string, currentDate: number) =>
     moment(value)
       .locale(locale)
@@ -24,9 +26,9 @@ export const Date: React.FC<DateProps> = ({ date, plain }) => {
         <Consumer>
           {currentDate =>
             plain ? (
-              localizeDate(date)
+              getTitle(date, locale)
             ) : (
-              <Tooltip title={localizeDate(date)}>
+              <Tooltip title={getTitle(date, locale)}>
                 <time dateTime={date}>
                   {getHumanized(date, locale, currentDate)}
                 </time>

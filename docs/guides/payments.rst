@@ -17,7 +17,7 @@ Your changes should live under the
     After completing those steps you will also need to integrate your payment
     gateway into your SPA Storefront's workflow.
 
-get_client_token(config)
+get_client_token(connection_params)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A client token is a signed data blob that includes configuration and
@@ -31,8 +31,8 @@ Example
 
 .. code-block:: python
 
-    def get_client_token(config: GatewayConfig) -> str:
-        gateway = get_payment_gateway(**config.connection_params)
+    def get_client_token(connection_params: Dict) -> str:
+        gateway = get_payment_gateway(**connection_params)
         client_token = gateway.client_token.generate()
         return client_token
 
@@ -424,8 +424,7 @@ Adding new payment gateway to the settings
         "braintree": {
             "module": "saleor.payment.gateways.braintree",
             "config": {
-                "auto_capture": get_bool_from_env("BRAINTREE_AUTO_CAPTURE", True),
-                "store_card": get_bool_from_env("BRAINTREE_STORE_CARD", False),
+                "auto_capture": True,
                 "template_path": "order/payment/braintree.html",
                 "connection_params": {
                     "sandbox_mode": get_bool_from_env("BRAINTREE_SANDBOX_MODE", True),
