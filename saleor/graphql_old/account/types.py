@@ -113,12 +113,12 @@ class CustomerEvent(CountableDjangoObjectType):
     count = graphene.Int(description="Number of objects concerned by the event.")
     order = gql_optimizer.field(
         graphene.Field(
-            "saleor.graphql.order.types.Order", description="The concerned order."
+            "saleor.graphql_old.order.types.Order", description="The concerned order."
         ),
         model_field="order",
     )
     order_line = graphene.Field(
-        "saleor.graphql.order.types.OrderLine", description="The concerned order line."
+        "saleor.graphql_old.order.types.OrderLine", description="The concerned order line."
     )
 
     class Meta:
@@ -158,7 +158,7 @@ class User(CountableDjangoObjectType):
     note = graphene.String(description="A note about the customer")
     orders = gql_optimizer.field(
         PrefetchingConnectionField(
-            "saleor.graphql.order.types.Order", description="List of user's orders."
+            "saleor.graphql_old.order.types.Order", description="List of user's orders."
         ),
         model_field="orders",
     )

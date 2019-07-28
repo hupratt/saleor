@@ -36,7 +36,7 @@ CREATE_FULFILLMENT_QUERY = """
 
 
 @patch(
-    "saleor.graphql.order.mutations.fulfillments."
+    "saleor.graphql_old.order.mutations.fulfillments."
     "send_fulfillment_confirmation_to_customer"
 )
 def test_create_fulfillment(
@@ -72,7 +72,7 @@ def test_create_fulfillment(
 
 
 @patch(
-    "saleor.graphql.order.mutations.fulfillments."
+    "saleor.graphql_old.order.mutations.fulfillments."
     "send_fulfillment_confirmation_to_customer"
 )
 def test_create_fulfillment_with_empty_quantity(
@@ -252,7 +252,7 @@ def test_cancel_fulfillment(
 
 
 @patch(
-    "saleor.graphql.order.mutations.fulfillments."
+    "saleor.graphql_old.order.mutations.fulfillments."
     "send_fulfillment_confirmation_to_customer"
 )
 def test_create_digital_fulfillment(

@@ -1477,7 +1477,7 @@ def test_order_void_payment_error(
     order_id = graphene.Node.to_global_id("Order", order.id)
     variables = {"id": order_id}
     with patch(
-        "saleor.graphql.order.mutations.orders.gateway_void",
+        "saleor.graphql_old.order.mutations.orders.gateway_void",
         side_effect=ValueError(msg),
     ):
         response = staff_api_client.post_graphql(

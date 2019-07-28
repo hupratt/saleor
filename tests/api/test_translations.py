@@ -1,7 +1,7 @@
 import graphene
 import pytest
 
-from saleor.graphql.translations.schema import TranslatableKinds
+from saleor.graphql_old.translations.schema import TranslatableKinds
 from tests.api.utils import get_graphql_content
 
 

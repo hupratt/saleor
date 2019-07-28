@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 from saleor.checkout.models import Checkout
 from saleor.checkout.utils import add_voucher_to_checkout, clean_checkout, is_fully_paid
-from saleor.graphql.core.utils import str_to_enum
+from saleor.graphql_old.core.utils import str_to_enum
 from saleor.order.models import Order
 from tests.api.utils import get_graphql_content
 
@@ -1044,7 +1044,7 @@ def test_checkout_prices(user_api_client, checkout_with_item):
     )
 
 
-@patch("saleor.graphql.checkout.mutations.clean_shipping_method")
+@patch("saleor.graphql_old.checkout.mutations.clean_shipping_method")
 def test_checkout_shipping_method_update(
     mock_clean_shipping, staff_api_client, shipping_method, checkout_with_item
 ):

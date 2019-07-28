@@ -16,7 +16,7 @@ from prices import Money
 from saleor.account import events as account_events
 from saleor.account.models import Address, User
 from saleor.checkout import AddressType
-from saleor.graphql.account.mutations import (
+from saleor.graphql_old.account.mutations import (
     CustomerDelete,
     SetPassword,
     StaffDelete,
