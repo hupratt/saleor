@@ -64,13 +64,13 @@ DATABASES = {
         'NAME': 'saleor',
         'USER': os.environ.get('dbuser'),
         'PASSWORD': os.environ.get('dbpassword'),
-        'HOST': os.environ.get('hostipdev'), #hostipdev
+        'HOST': os.environ.get('hostip'), #hostipdev
         'PORT': os.environ.get('pnumber'),
     }
 }
 
 
-TIME_ZONE = "America/Chicago"
+TIME_ZONE = "Europe/Luxembourg"
 LANGUAGE_CODE = "en"
 LANGUAGES = [
     ("ar", _("Arabic")),
