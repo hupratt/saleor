@@ -5,7 +5,7 @@ from django_countries import countries
 from django_prices_vatlayer.models import VAT
 
 from saleor.core.permissions import MODELS_PERMISSIONS
-from saleor.graphql.core.utils import str_to_enum
+from saleor.graphql_old.core.utils import str_to_enum
 from saleor.site import AuthenticationBackends
 from saleor.site.models import Site
 from tests.api.utils import get_graphql_content
@@ -569,7 +569,7 @@ def test_shop_fetch_tax_rates_no_api_access_key(
     assert data["errors"][0]["message"] == error_message
 
 
-@patch("saleor.graphql.shop.mutations.call_command")
+@patch("saleor.graphql_old.shop.mutations.call_command")
 def test_shop_fetch_tax_rates(
     mock_call_command, staff_api_client, permission_manage_settings, settings
 ):

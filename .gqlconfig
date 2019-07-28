@@ -1,6 +1,6 @@
 {
   schema: {
-    files: "saleor/graphql/schema.graphql"
+    files: "saleor/graphql_old/schema.graphql"
   },
   query: {
     files: [

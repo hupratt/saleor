@@ -3,7 +3,7 @@ from unittest.mock import patch
 import graphene
 
 from saleor.core.utils import get_country_name_by_code
-from saleor.graphql.payment.enums import (
+from saleor.graphql_old.payment.enums import (
     OrderAction,
     PaymentChargeStatusEnum,
     PaymentGatewayEnum,
@@ -454,7 +454,7 @@ def test_query_payments(payment_dummy, permission_manage_orders, staff_api_clien
     assert payment_ids == [payment_id]
 
 
-@patch("saleor.graphql.payment.resolvers.gateway_get_client_token")
+@patch("saleor.graphql_old.payment.resolvers.gateway_get_client_token")
 def test_query_payment_client_token(mock_get_client_token, user_api_client):
     query = """
     query paymentClientToken($gateway: GatewaysEnum) {

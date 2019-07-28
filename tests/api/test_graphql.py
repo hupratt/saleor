@@ -10,9 +10,9 @@ from django.test import RequestFactory
 from graphql_jwt.shortcuts import get_token
 from graphql_relay import to_global_id
 
-from saleor.graphql.middleware import jwt_middleware
-from saleor.graphql.product.types import Product
-from saleor.graphql.utils import (
+from saleor.graphql_old.middleware import jwt_middleware
+from saleor.graphql_old.product.types import Product
+from saleor.graphql_old.utils import (
     filter_by_query_param,
     generate_query_argument_description,
     get_nodes,

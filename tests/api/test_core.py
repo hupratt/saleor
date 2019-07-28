@@ -8,14 +8,14 @@ from django.utils import timezone
 from graphene import InputField
 from graphql_jwt.shortcuts import get_token
 
-from saleor.graphql.core.enums import ReportingPeriod
-from saleor.graphql.core.filters import EnumFilter
-from saleor.graphql.core.mutations import BaseMutation
-from saleor.graphql.core.types import FilterInputObjectType
-from saleor.graphql.core.utils import clean_seo_fields, snake_to_camel_case
-from saleor.graphql.product import types as product_types
-from saleor.graphql.utils import get_database_id, reporting_period_to_date
-from saleor.product.models import Product
+from saleor.graphql_old.core.enums import ReportingPeriod
+from saleor.graphql_old.core.filters import EnumFilter
+from saleor.graphql_old.core.mutations import BaseMutation
+from saleor.graphql_old.core.types import FilterInputObjectType
+from saleor.graphql_old.core.utils import clean_seo_fields, snake_to_camel_case
+from saleor.graphql_old.product import types as product_types
+from saleor.graphql_old.utils import get_database_id, reporting_period_to_date
+from saleor.product_old.models import Product
 from tests.api.utils import _get_graphql_content_from_response, get_graphql_content
 
 

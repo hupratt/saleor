@@ -1,7 +1,7 @@
 import graphene
 import pytest
 
-from saleor.graphql.shipping.types import ShippingMethodTypeEnum
+from saleor.graphql_old.shipping.types import ShippingMethodTypeEnum
 from tests.api.utils import get_graphql_content
 
 

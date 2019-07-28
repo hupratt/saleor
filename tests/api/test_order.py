@@ -9,15 +9,15 @@ from freezegun import freeze_time
 
 from saleor.account.models import CustomerEvent
 from saleor.core.utils.taxes import ZERO_TAXED_MONEY
-from saleor.graphql.core.enums import ReportingPeriod
-from saleor.graphql.order.mutations.orders import (
+from saleor.graphql_old.core.enums import ReportingPeriod
+from saleor.graphql_old.order.mutations.orders import (
     clean_order_cancel,
     clean_order_capture,
     clean_refund_payment,
     try_payment_action,
 )
-from saleor.graphql.order.utils import validate_draft_order
-from saleor.graphql.payment.types import PaymentChargeStatusEnum
+from saleor.graphql_old.order.utils import validate_draft_order
+from saleor.graphql_old.payment.types import PaymentChargeStatusEnum
 from saleor.order import OrderStatus, events as order_events
 from saleor.order.models import Order, OrderEvent
 from saleor.payment import ChargeStatus, CustomPaymentChoices, PaymentError
