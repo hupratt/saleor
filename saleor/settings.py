@@ -26,7 +26,7 @@ def get_bool_from_env(name, default_value):
     return default_value
 
 
-DEBUG = get_bool_from_env("DEBUG", True)
+DEBUG = get_bool_from_env("DEBUG", False)
 
 SITE_ID = 1
 
@@ -42,7 +42,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ALLOWED_STOREFRONT_HOSTS = get_list(
-    os.environ.get("ALLOWED_STOREFRONT_HOSTS", "localhost,127.0.0.1")
+    os.environ.get("ALLOWED_STOREFRONT_HOSTS", "*")
 )
 
 INTERNAL_IPS = get_list(os.environ.get("INTERNAL_IPS", "127.0.0.1"))
@@ -53,14 +53,20 @@ if REDIS_URL:
     CACHE_URL = os.environ.setdefault("CACHE_URL", REDIS_URL)
 CACHES = {"default": django_cache_url.config()}
 
+
+
 DATABASES = {
-    "default": dj_database_url.config(
-        default="postgres://saleor:saleor@localhost:5432/saleor", conn_max_age=600
-    )
+    'default': {
+        'ENGINE': os.environ.get('enginedb'),
+        'NAME': os.environ.get('dbname_saleor'),
+        'USER': os.environ.get('dbuser'),
+        'PASSWORD': os.environ.get('dbpassword'),
+        'HOST': os.environ.get('hostip'), #hostipdev
+        'PORT': os.environ.get('pnumber'),
+    }
 }
 
-
-TIME_ZONE = "America/Chicago"
+TIME_ZONE = "Europe/Luxembourg"
 LANGUAGE_CODE = "en"
 LANGUAGES = [
     ("ar", _("Arabic")),
@@ -199,7 +205,7 @@ TEMPLATES = [
 ]
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY_saleor")
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -412,7 +418,7 @@ bootstrap4 = {
 
 TEST_RUNNER = "tests.runner.PytestTestRunner"
 
-ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
+ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "*"))
 ALLOWED_GRAPHQL_ORIGINS = os.environ.get("ALLOWED_GRAPHQL_ORIGINS", "*")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
