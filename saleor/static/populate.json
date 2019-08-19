@@ -1,0 +1,372 @@
+[
+  {
+    "model": "product.category",
+    "pk": 1,
+    "fields": {
+      "seo_title": "Accessories",
+      "seo_description": "accessories",
+      "name": "Accessories",
+      "slug": "accessories",
+      "description": "",
+      "description_json": {
+        "blocks": [
+          {
+            "key": "",
+            "data": {},
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": []
+          }
+        ],
+        "entityMap": {}
+      },
+      "parent": null,
+      "background_image": "category-backgrounds/accessories.jpg",
+      "background_image_alt": "",
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 1,
+      "level": 0
+    }
+  },
+  {
+    "model": "product.category",
+    "pk": 2,
+    "fields": {
+      "seo_title": "Literature",
+      "seo_description": "literature",
+      "name": "Literature",
+      "slug": "literature",
+      "description": "",
+      "description_json": {
+        "blocks": [
+          {
+            "key": "",
+            "data": {},
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": []
+          }
+        ],
+        "entityMap": {}
+      },
+      "parent": null,
+      "background_image": "category-backgrounds/groceries_HagDCol.jpg",
+      "background_image_alt": "",
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 2,
+      "level": 0
+    }
+  },
+
+  {
+    "model": "product.category",
+    "pk": 3,
+    "fields": {
+      "seo_title": "Food",
+      "seo_description": "food",
+      "name": "Food",
+      "slug": "food",
+      "description": "",
+      "description_json": {
+        "blocks": [
+          {
+            "key": "",
+            "data": {},
+            "text": "",
+            "type": "unstyled",
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": []
+          }
+        ],
+        "entityMap": {}
+      },
+      "parent": null,
+      "background_image": "category-backgrounds/groceries_HagDCol.jpg",
+      "background_image_alt": "",
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 3,
+      "level": 0
+    }
+  },
+        
+  {
+    "model": "product.producttype",
+    "pk": 1,
+    "fields": {
+      "name": "Photo book",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Photo book"}}},
+      "weight": "0.2 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 2,
+    "fields": {
+      "name": "Book",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Book"}}},
+      "weight": "0.2 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 3,
+    "fields": {
+      "name": "Magazine",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Magazine"}}},
+      "weight": "0.2 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 4,
+    "fields": {
+      "name": "Tourist guide",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Tourist guide"}}},
+      "weight": "0.1 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 5,
+    "fields": {
+      "name": "Tea",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Tea"}}},
+      "weight": "0.1 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 6,
+    "fields": {
+      "name": "Jam",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Jam"}}},
+      "weight": "0.1 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 7,
+    "fields": {
+      "name": "Chocolate",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Chocolate"}}},
+      "weight": "0.1 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 8,
+    "fields": {
+      "name": "Wine",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Wine"}}},
+      "weight": "1.0 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 9,
+    "fields": {
+      "name": "Postcard",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Postcard"}}},
+      "weight": "0.1 kg"
+    }
+  },
+  {
+    "model": "product.producttype",
+    "pk": 10,
+    "fields": {
+      "name": "Blanket",
+      "has_variants": true,
+      "is_shipping_required": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Blanket"}}},
+      "weight": "0.1 kg"
+    }
+  },
+  {
+    "model": "product.product",
+    "pk": 1,
+    "fields": {
+      "publication_date": null,
+      "is_published": true,
+      "seo_title": "Book 1 Title",
+      "seo_description": "Book 1 Description",
+      "product_type": 5,
+      "name": "Book 1 Title",
+      "description": "Book 1 Description",
+      "description_json": {
+        "blocks": [
+          {
+            "key": "",
+            "data": {},
+            "text": "Book 1 Description",
+            "type": "unstyled",
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": []
+          }
+        ],
+        "entityMap": {}
+      },
+      "category": 2,
+      "price": { "_type": "Money", "amount": "15.00", "currency": "EUR" },
+      "attributes": "{}",
+      "updated_at": "2019-01-01T12:47:35.666Z",
+      "charge_taxes": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Book 1 Description"}}},
+      "weight": "0.0 kg"
+    }
+  },
+  {
+    "model": "product.product",
+    "pk": 2,
+    "fields": {
+      "publication_date": null,
+      "is_published": true,
+      "seo_title": "Book 2 Title",
+      "seo_description": "Book 2 Description",
+      "product_type": 5,
+      "name": "Book 2 Title",
+      "description": "Book 2 Description",
+      "description_json": {
+        "blocks": [
+          {
+            "key": "",
+            "data": {},
+            "text": "Book 2 Description",
+            "type": "unstyled",
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": []
+          }
+        ],
+        "entityMap": {}
+      },
+      "category": 2,
+      "price": { "_type": "Money", "amount": "15.00", "currency": "EUR" },
+      "attributes": "{\"15\": [\"46\"], \"21\": [\"68\"]}",
+      "updated_at": "2019-01-01T12:47:35.666Z",
+      "charge_taxes": true,
+      "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Book 2 Description"}}},
+      "weight": "0.0 kg"
+    }
+  },
+  {
+    "model": "product.productvariant",
+    "pk": 1,
+    "fields": {
+      "sku": "546451996",
+      "name": "Book 1 EN",
+      "price_override": {
+        "_type": "Money",
+        "amount": "15.00",
+        "currency": "EUR"
+      },
+      "product": 1,
+      "attributes": "{\"1\": [\"1\"]}",
+      "track_inventory": true,
+      "quantity": 1,
+      "quantity_allocated": 1,
+      "cost_price": { "_type": "Money", "amount": "5.00", "currency": "EUR" },
+      "weight": "1.0 kg"
+    }
+  },
+  {
+    "model": "product.productvariant",
+    "pk": 2,
+    "fields": {
+      "sku": "546451997",
+      "name": "Book 1 PT",
+      "price_override": {
+        "_type": "Money",
+        "amount": "20.00",
+        "currency": "EUR"
+      },
+      "product": 1,
+      "attributes": "{\"1\": [\"2\"]}",
+      "track_inventory": true,
+      "quantity": 1,
+      "quantity_allocated": 1,
+      "cost_price": { "_type": "Money", "amount": "10.00", "currency": "EUR" },
+      "weight": "1.0 kg"
+    }
+  },
+  {
+    "model": "product.attribute",
+    "pk": 1,
+    "fields": {
+      "slug": "language",
+      "name": "Language",
+      "product_type": null,
+      "product_variant_type": 2
+    }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 1,
+    "fields": {
+      "sort_order": 0,
+      "name": "English",
+      "value": "",
+      "slug": "english",
+      "attribute": 2
+    }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 2,
+    "fields": {
+      "sort_order": 1,
+      "name": "Portuguese",
+      "value": "",
+      "slug": "portuguese",
+      "attribute": 2
+    }
+  },
+  {
+    "model": "product.productimage",
+    "pk": 1,
+    "fields": {
+      "sort_order": 0,
+      "product": 1,
+      "image": "products/saleordemoproduct_paints_01_oDLxDCy.png",
+      "ppoi": "0.5x0.5",
+      "alt": ""
+    }
+  },
+  {
+    "model": "product.productimage",
+    "pk": 2,
+    "fields": {
+      "sort_order": 0,
+      "product": 2,
+      "image": "products/saleordemoproduct_paints_02_dYeeCcU.png",
+      "ppoi": "0.5x0.5",
+      "alt": ""
+    }
+  }
+]
