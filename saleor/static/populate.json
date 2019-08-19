@@ -1,3 +1,5 @@
+
+
 [
   {
     "model": "product.category",
@@ -268,7 +270,7 @@
       },
       "category": 2,
       "price": { "_type": "Money", "amount": "15.00", "currency": "EUR" },
-      "attributes": "{\"15\": [\"46\"], \"21\": [\"68\"]}",
+      "attributes": "{}",
       "updated_at": "2019-01-01T12:47:35.666Z",
       "charge_taxes": true,
       "meta": {"taxes":{"vatlayer": {"code": "standard", "description": "Book 2 Description"}}},
@@ -333,7 +335,7 @@
       "name": "English",
       "value": "",
       "slug": "english",
-      "attribute": 2
+      "attribute": 1
     }
   },
   {
@@ -344,7 +346,7 @@
       "name": "Portuguese",
       "value": "",
       "slug": "portuguese",
-      "attribute": 2
+      "attribute": 1
     }
   },
   {

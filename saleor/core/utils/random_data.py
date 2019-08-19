@@ -115,7 +115,7 @@ IMAGES_MAPPING = {
 }
 
 
-CATEGORY_IMAGES = {7: "accessories.jpg", 8: "groceries.jpg", 9: "apparel.jpg"}
+CATEGORY_IMAGES = {1: "accessories.jpg", 2: "groceries.jpg", 3: "apparel.jpg"}
 
 COLLECTION_IMAGES = {1: "summer.jpg", 2: "clothing.jpg"}
 
@@ -234,7 +234,7 @@ def get_in_default_currency(defaults, field, currency):
 
 def create_products_by_schema(placeholder_dir, create_images):
     path = os.path.join(
-        settings.PROJECT_ROOT, "saleor", "static", "populatedb_data.json"
+        settings.PROJECT_ROOT, "saleor", "static", "populate.json"
     )
     with open(path) as f:
         db_items = json.load(f, object_hook=object_hook)
@@ -256,9 +256,9 @@ def create_products_by_schema(placeholder_dir, create_images):
         create_images=create_images,
     )
     create_product_variants(variants_data=types["product.productvariant"])
-    create_collections(
-        data=types["product.collection"], placeholder_dir=placeholder_dir
-    )
+    # create_collections(
+    #     data=types["product.collection"], placeholder_dir=placeholder_dir
+    # )
 
 
 class SaleorProvider(BaseProvider):
@@ -988,15 +988,15 @@ def create_menus():
         name=settings.DEFAULT_MENUS["bottom_menu_name"]
     )
     bottom_menu.items.all().delete()
-    collection = Collection.objects.filter(products__isnull=False).order_by("?")[0]
-    item, _ = bottom_menu.items.get_or_create(name="Collections", collection=collection)
+    # collection = Collection.objects.filter(products__isnull=False).order_by("?")[0]
+    # item, _ = bottom_menu.items.get_or_create(name="Collections", collection=collection)
 
-    for collection in Collection.objects.filter(
-        products__isnull=False, background_image__isnull=False
-    ):
-        bottom_menu.items.get_or_create(
-            name=collection.name, collection=collection, parent=item
-        )
+    # for collection in Collection.objects.filter(
+    #     products__isnull=False, background_image__isnull=False
+    # ):
+    #     bottom_menu.items.get_or_create(
+    #         name=collection.name, collection=collection, parent=item
+    #     )
 
     page = Page.objects.order_by("?")[0]
     bottom_menu.items.get_or_create(name=page.title, page=page)
