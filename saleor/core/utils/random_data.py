@@ -187,9 +187,10 @@ def create_attributes_values(values_data):
 def create_products(products_data, placeholder_dir, create_images):
     for product in products_data:
         pk = product["pk"]
+        # print("product",product)
         # We are skipping products without images
-        if pk not in IMAGES_MAPPING:
-            continue
+        # if pk not in IMAGES_MAPPING:
+        #     continue
         defaults = product["fields"]
         defaults["weight"] = get_weight(defaults["weight"])
         defaults["category_id"] = defaults.pop("category")
@@ -198,6 +199,7 @@ def create_products(products_data, placeholder_dir, create_images):
             defaults, "price", settings.DEFAULT_CURRENCY
         )
         defaults["attributes"] = json.loads(defaults["attributes"])
+        print("defaults",defaults)
         product, _ = Product.objects.update_or_create(pk=pk, defaults=defaults)
 
         if create_images:
@@ -205,6 +207,7 @@ def create_products(products_data, placeholder_dir, create_images):
             for image_name in images:
                 create_product_image(product, placeholder_dir, image_name)
 
+defaults = {"weight": "0.0 kg","category_id": 2, "product_type_id": 2, "attributes": "{}", "price": { "_type": "Money", "amount": "15.00", "currency": "EUR" },}
 
 def create_product_variants(variants_data):
     for variant in variants_data:
@@ -228,7 +231,7 @@ def create_product_variants(variants_data):
 
 def get_in_default_currency(defaults, field, currency):
     if field in defaults and defaults[field] is not None:
-        return Money(defaults[field].amount, currency)
+        return Money(defaults[field]['amount'], currency)
     return None
 
 
