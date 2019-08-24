@@ -18,11 +18,12 @@ image_name = "Paula Rego.jpg"
 image_dir = "saleor/static/placeholders/"
 isbn = 9789899568792
 # 1 for English attr = {"1": ["1"]}
-# 2 for PT attr = {"1": ["2"]}
+# 2 for Portuguese attr = {"1": ["2"]}
 attr = {"1": ["2"]}
 weight = "0.1"
 pk = 1
 quantity = 1
+get_book_cover = "https://www.googleapis.com/books/v1/volumes?q="+str(isbn)
 
 def create_product(quantity = quantity, name = name, price = price, weight = weight, image_name = image_name, image_dir = image_dir, isbn = isbn, attr = attr, pk = pk):
     product_defaults = {"name":name, "weight": weight, "category_id": 2, "product_type_id": 2, "attributes": "{}", "price": Money(price,'EUR')}
