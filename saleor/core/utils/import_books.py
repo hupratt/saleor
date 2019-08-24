@@ -1,6 +1,6 @@
 from saleor.product.models import Product, ProductImage, ProductVariant
 from prices import Money
-import os
+import os, requests, urllib
 from django.core.files import File
 from saleor.product.thumbnails import create_product_thumbnails
 
@@ -16,14 +16,22 @@ price = '10.00'
 # image_name ="Um Museu do Outro Mundo.jpg"
 image_name = "Paula Rego.jpg"
 image_dir = "saleor/static/placeholders/"
-isbn = 9789899568792
+isbn = '0553283685'
 # 1 for English attr = {"1": ["1"]}
 # 2 for Portuguese attr = {"1": ["2"]}
 attr = {"1": ["2"]}
 weight = "0.1"
 pk = 1
 quantity = 1
-get_book_cover = "https://www.googleapis.com/books/v1/volumes?q="+str(isbn)
+
+
+def get_book_cover_google_url(name = name, isbn = isbn):
+    url = "https://www.googleapis.com/books/v1/volumes?q=" + isbn
+    response = requests.get(url).json()
+    if response['totalItems'] != 0:
+        image_url = response['items'][0]['volumeInfo']['imageLinks']['thumbnail']
+    os.chdir("/home/hugo/Development/saleor/saleor/static/placeholders")
+    urllib.request.urlretrieve(image_url, name+".jpg")
 
 def create_product(quantity = quantity, name = name, price = price, weight = weight, image_name = image_name, image_dir = image_dir, isbn = isbn, attr = attr, pk = pk):
     product_defaults = {"name":name, "weight": weight, "category_id": 2, "product_type_id": 2, "attributes": "{}", "price": Money(price,'EUR')}
@@ -34,6 +42,10 @@ def create_product(quantity = quantity, name = name, price = price, weight = wei
     variant_defaults = {"name":name, "weight": weight, "product_id": pk, "attributes": attr, "price_override": Money('15.00','EUR'), "cost_price": Money('1.00','EUR'), "sku":isbn, "quantity": quantity}
     ProductVariant.objects.update_or_create(pk=pk, defaults=variant_defaults)
 
-create_product(name = name, price = price, weight = weight, 
-               image_name = image_name, image_dir = image_dir, 
-               isbn = isbn, attr = attr, pk = pk, quantity = quantity)
+
+get_book_cover_google_url(name = name, isbn = isbn)
+
+# create_product(name = name, price = price, weight = weight, 
+#                image_name = image_name, image_dir = image_dir, 
+#                isbn = isbn, attr = attr, pk = pk, quantity = quantity)
+
