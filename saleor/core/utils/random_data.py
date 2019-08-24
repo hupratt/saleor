@@ -60,9 +60,9 @@ fake = Factory.create()
 PRODUCTS_LIST_DIR = "products-list/"
 
 IMAGES_MAPPING = {
-    61: ["saleordemoproduct_paints_01.png"],
-    62: ["saleordemoproduct_paints_02.png"],
-    63: ["saleordemoproduct_paints_03.png"],
+    11: ["saleordemoproduct_paints_01.png"],
+    3: ["saleordemoproduct_paints_02.png"],
+    2: ["saleordemoproduct_paints_03.png"],
     64: ["saleordemoproduct_paints_04.png"],
     65: ["saleordemoproduct_paints_05.png"],
     71: ["saleordemoproduct_fd_juice_06.png"],
@@ -80,7 +80,7 @@ IMAGES_MAPPING = {
     84: ["saleordemoproduct_beer-01_1.png", "saleordemoproduct_beer-01_2.png"],
     85: ["saleordemoproduct_cuschion01.png"],
     86: ["saleordemoproduct_cuschion02.png"],
-    87: [
+    1: [
         "saleordemoproduct_sneakers_01_1.png",
         "saleordemoproduct_sneakers_01_2.png",
         "saleordemoproduct_sneakers_01_3.png",
@@ -184,7 +184,7 @@ def create_attributes_values(values_data):
         AttributeValue.objects.update_or_create(pk=pk, defaults=defaults)
 
 
-def create_products(products_data, placeholder_dir, create_images):
+def create_products(products_data, placeholder_dir):
     for product in products_data:
         pk = product["pk"]
         # print("product",product)
@@ -207,17 +207,16 @@ def create_products(products_data, placeholder_dir, create_images):
             for image_name in images:
                 create_product_image(product, placeholder_dir, image_name)
 
-defaults = {"weight": "0.0 kg","category_id": 2, "product_type_id": 2, "attributes": "{}", "price": { "_type": "Money", "amount": "15.00", "currency": "EUR" },}
 
 def create_product_variants(variants_data):
     for variant in variants_data:
         pk = variant["pk"]
         defaults = variant["fields"]
         defaults["weight"] = get_weight(defaults["weight"])
-        product_id = defaults.pop("product")
-        # We have not created products without images
-        if product_id not in IMAGES_MAPPING:
-            continue
+        # product_id = defaults.pop("product")
+        # # We have not created products without images
+        # if product_id not in IMAGES_MAPPING:
+        #     continue
         defaults["product_id"] = product_id
         defaults["attributes"] = json.loads(defaults["attributes"])
         defaults["price_override"] = get_in_default_currency(
@@ -255,8 +254,8 @@ def create_products_by_schema(placeholder_dir, create_images):
     create_attributes_values(values_data=types["product.attributevalue"])
     create_products(
         products_data=types["product.product"],
-        placeholder_dir=placeholder_dir,
-        create_images=create_images,
+        placeholder_dir=placeholder_dir
+        # create_images=create_images,
     )
     create_product_variants(variants_data=types["product.productvariant"])
     # create_collections(
