@@ -1,151 +1,294 @@
-![github_saleor_readmew_header_01](https://user-images.githubusercontent.com/5421321/47800694-19bec680-dd2d-11e8-8625-2ed7c690bc13.jpg)
+<!--
+Copyright 2012-2017 Lionheart Software LLC
 
-<div align="center">
-  <h1>Saleor</h1>
-</div>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-<div align="center">
-  <strong>E-commerce for the PWA era</strong>
-</div>
+   http://www.apache.org/licenses/LICENSE-2.0
 
-<div align="center">
-  A modular, high performance e-commerce storefront built with GraphQL, Django, and ReactJS.
-</div>
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 
-<br>
+![](meta/repo-banner-2.png)
 
-<div align="center">
-  Join our active, engaged community: <br>
-  <a href="https://getsaleor.com/">Website</a>
-  <span> | </span>
-  <a href="https://medium.com/saleor">Blog</a>
-  <span> | </span>
-  <a href="https://twitter.com/getsaleor">Twitter</a>
-  <span> | </span>
-  <a href="https://gitter.im/mirumee/saleor">Gitter</a>
-  <span> | </span>
-  <a href="https://spectrum.chat/saleor">Spectrum</a>
-</div>
+[![Version](https://img.shields.io/travis/lionheart/bottlenose.svg?style=flat)](https://travis-ci.org/lionheart/bottlenose)
+[![Version](https://img.shields.io/pypi/v/bottlenose.svg?style=flat)](https://pypi.python.org/pypi/bottlenose)
+[![License](https://img.shields.io/pypi/l/bottlenose.svg?style=flat)](LICENSE)
+[![Versions](https://img.shields.io/pypi/pyversions/bottlenose.svg?style=flat)](https://pypi.python.org/pypi/bottlenose)
 
-<br>
+Bottlenose is a thin, well-tested, maintained, and powerful Python wrapper over the Amazon Product Advertising API.  There is practically no overhead, and no magic (unless you add it yourself).
 
-<div align="center">
-  <a href="https://circleci.com/gh/mirumee/saleor">
-    <img src="https://circleci.com/gh/mirumee/saleor.svg?style=svg" alt="Build status" />
-  </a>
-  <a href="http://codecov.io/github/mirumee/saleor?branch=master">
-    <img src="http://codecov.io/github/mirumee/saleor/coverage.svg?branch=master" alt="Codecov" />
-  </a>
-  <a href="https://docs.getsaleor.com/">
-    <img src="https://img.shields.io/badge/docs-docs.getsaleor.com-brightgreen.svg" alt="Documentation" />
-  </a>
-  <a href="https://github.com/python/black">
-    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
-  </a>
-</div>
-
-## Table of Contents
-
-- [What makes Saleor special?](#what-makes-saleor-special)
-- [Features](#features)
-- [Installation](#installation)
-- [Documentation](#documentation)
-- [Demo](#demo)
-- [Contributing](#contributing)
-- [Translations](#translations)
-- [Your feedback](#your-feedback)
-- [License](#license)
-
-## What makes Saleor special?
-
-Saleor is a rapidly-growing open source e-commerce platform that has served high-volume companies from branches like publishing and apparel since 2012. Based on Python and Django, the latest major update introduces a modular front end powered by a GraphQL API and written with React and TypeScript.
+Before you get started, make sure you have both Amazon Product Advertising and AWS accounts. `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_ASSOCIATE_TAG` are all from your Amazon Associate Account.
 
 ## Features
 
-- **PWA**: End users can shop offline for better sales and shopping experiences
-- **GraphQL API**: Access all data from any web or mobile client using the latest technology
-- **Headless commerce**: Build mobile apps, customize storefronts and externalize processes
-- **UX and UI**: Designed for a user experience that rivals even the top commercial platforms
-- **Dashboard**: Administrators have total control of users, processes and products
-- **Orders**: A comprehensive system for orders, dispatch and refunds
-- **Cart**: Advanced payment and tax options, with full control over discounts and promotions
-- **Payments**: Flexible API architecture allows integration of any payment method. Comes with Braintree support out of the box.
-- **Geo-adaptive**: Automatic localized pricing. Over 20 local languages. Localized checkout experience by country.
-- **SEO**: Packed with features that get stores to a wider audience
-- **Cloud**: Optimized for deployments using Docker
-- **Analytics**: Server-side Google Analytics to report e-commerce metrics without affecting privacy
+* [x] Compatible with Python versions 2.4 and up
+* [x] Support for BR, CA, CN, DE, ES, FR, IN, IT, JP, MX, UK, and US Amazon Product Advertising API endpoints
+* [x] No requirements, except simplejson for Python versions before 2.6
+* [x] Configurable query parsing
+* [x] Configurable throttling for batches of queries
+* [x] Configurable query caching
+* [x] Configurable error handling and retries
 
-Saleor is free and always will be.
-Help us out… If you love free stuff and great software, give us a star! 🌟
+## Usage
 
-![1 copy 2x](https://user-images.githubusercontent.com/5421321/47798207-30aeea00-dd28-11e8-9398-3d8426836a83.png)
-![group 2 2x](https://user-images.githubusercontent.com/5421321/47799917-8afd7a00-dd2b-11e8-88c7-63588e25bcea.png)
+### [pip](https://pip.pypa.io/en/stable/installing/)
 
-## Installation
+    pip install bottlenose
 
-Saleor requires Python 3.6+, Node.js 10.0+, PostgreSQL and OS-specific dependency tools.
+or
 
-[See the Saleor docs](https://docs.getsaleor.com/docs/getting-started/intro/) for step-by-step installation and deployment instructions.
+    python3 -m pip install bottlenose
 
-## Documentation
+Then, using your `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_ASSOCIATE_TAG`:
 
-Saleor documentation is available here: [docs.getsaleor.com](https://docs.getsaleor.com)
+```python
+import bottlenose
+amazon = bottlenose.Amazon(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ASSOCIATE_TAG)
+response = amazon.ItemLookup(ItemId="B007OZNUCE")
+```
 
-To contribute, please see the [`mirumee/saleor-docs` repository](https://github.com/mirumee/saleor-docs/).
+You can then parse the `response` output to view item information.
 
-## PWA Storefront
+## Troubleshooting
 
-For PWA, single-page Storefront 2.0 go to the [saleor-storefront](https://github.com/mirumee/saleor-storefront) repository.
+* If you need help or would like to ask a general question, use [Stack Overflow](http://stackoverflow.com/questions/tagged/bottlenose). Apply the 'bottlenose' tag to your question to get help faster.
+* If you found a bug or have a feature request, open an issue.
+* If you want to contribute, submit a pull request. If it's a big change, please open an issue first to discuss implementation.
 
-[View Storefront 2.0 demo](https://pwa.getsaleor.com/)
+## Advanced Usage
 
-## Dashboard 2.0
+#### 1. Available Search Methods
 
-For Dashboard 2.0 go to the [saleor-dashboard](https://github.com/mirumee/saleor-dashboard) repository.
+##### Region Endpoint
 
-[View Dashboard 2.0 demo](https://demo.getsaleor.com/dashboard/next/)
+The default Region is the US (`webservices.amazon.com`). To specify a different endpoint
+simply set the Region parameter with the request. For example to specify the French
+endpoint (`webservices.amazon.fr`) set the Region parameter to 'FR':
 
-## Demo
+```python
+amazon = bottlenose.Amazon(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ASSOCIATE_TAG, Region='FR')
+```
+Supported values for the Region parameter are CA, CN, DE, ES, FR, IN, IT, JP, UK, and US (default).
 
-Want to see Saleor in action?
+Your Amazon Product Advertising account (AWS_ASSOCIATE_TAG) mut exist for the given endpoint
+or you'll get an HTTP 400 error ('Bad Request').
 
-[View Storefront](http://demo.getsaleor.com/) | [View Dashboard (admin area)](http://demo.getsaleor.com/dashboard/)
+##### Search for a Specific Item
 
-Or launch the demo on a free Heroku instance.
+```python
+response = amazon.ItemLookup(ItemId="B007OZNUCE")
+```
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+##### Search for Items by Keywords
 
-Login credentials: `admin@example.com`/`admin`
+```python
+response = amazon.ItemSearch(Keywords="Kindle 3G", SearchIndex="All")
+```
 
-## Contributing
+##### Search for Images for an item
 
-We love your contributions and do our best to provide you with mentorship and support. If you are looking for an issue to tackle, take a look at issues labelled [`Help Wanted`](https://github.com/mirumee/saleor/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
+```python
+response = amazon.ItemLookup(ItemId="1449372422", ResponseGroup="Images")
+```
 
-If nothing grabs your attention, check [our roadmap](https://github.com/mirumee/saleor/projects/6) or come up with your own feature. Just drop us a line or [open an issue](https://github.com/mirumee/saleor/issues/new) and we’ll work out how to handle it.
+##### Search for Similar Items
 
-Get more details in our [Contributing Guide](https://docs.getsaleor.com/docs/contributing/intro/).
+```python
+response = amazon.SimilarityLookup(ItemId="B007OZNUCE")
+```
 
-## Translations
+#### 2. Available Shopping Related Methods
 
-Did you know that Saleor is available in almost 30 languages, translated entirely by our community?
+##### Required
 
-If you'd like to help us, you can join one of our translation teams on [the localization platform Transifex](https://www.transifex.com/mirumee/saleor-1/languages/).
+```python
+amazon = bottlenose.Amazon(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ASSOCIATE_TAG)
+```
 
-The repository gets synchronized weekly with the latest contributions.
+##### Create a cart
 
-## Your feedback
+```python
+response = amazon.CartCreate(...)
+```
 
-Do you use Saleor as an e-commerce platform?
-Fill out this short survey and help us grow. It will take just a minute, but mean a lot!
+##### Adding to a cart
 
-[Take a survey](https://mirumee.typeform.com/to/sOIJbJ)
+```python
+response = amazon.CartAdd(CartId, ...)
+```
+
+##### Get a cart by ID
+
+```python
+response = amazon.CartGet(CartId, ...)
+```
+
+##### Modifying a cart
+
+```python
+response = amazon.CartModify(ASIN, CartId,...)
+```
+
+##### Clearing a cart
+
+```python
+response = amazon.CartClear(CartId, ...)
+```
+
+#### 3. Sample Code
+
+```python
+import bottlenose
+amazon = bottlenose.Amazon(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ASSOCIATE_TAG)
+response = amazon.ItemLookup(ItemId="0596520999", ResponseGroup="Images",
+    SearchIndex="Books", IdType="ISBN")
+print(response)
+# <?xml version="1.0" ?><ItemLookupResponse xmlns="http://webservices.amazon...
+```
+
+Here is another example.
+
+```python
+response = amazon.ItemSearch(Keywords="Kindle 3G", SearchIndex="All")
+# <?xml version="1.0" ?><ItemSearchResponse xmlns="http://webservices.amazon...
+```
+
+Bottlenose can also read your credentials from the environment automatically;
+just set `$AWS_ACCESS_KEY_ID`, `$AWS_SECRET_ACCESS_KEY` and
+`$AWS_ASSOCIATE_TAG`.
+
+Any valid API call from the following is supported (in addition to any others
+that may be added in the future). Just plug in appropriate request parameters
+for the operation you'd like to call, and you're good to go.
+
+    BrowseNodeLookup
+    CartAdd
+    CartClear
+    CartCreate
+    CartGet
+    CartModify
+    ItemLookup
+    ItemSearch
+    SimilarityLookup
+
+You can refer here for a full listing of API calls to be made from Amazon.
+- [Amazon API Quick Reference Card](http://s3.amazonaws.com/awsdocs/Associates/latest/prod-adv-api-qrc.pdf)
+
+-------
+
+For more information about these calls, please consult the [Product Advertising
+API Developer Guide](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Welcome.html).
+
+## Parsing
+
+By default, API calls return the response as a raw bytestring. You can change
+this with the `Parser` constructor argument. The parser is a callable that
+takes a single argument, the response as a raw bytestring, and returns the
+parsed response in a format of your choice.
+
+For example, to parse responses with BeautifulSoup:
+
+```python
+import bottlenose
+from bs4 import BeautifulSoup
+
+amazon = bottlenose.Amazon(
+    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ASSOCIATE_TAG,
+    Parser=lambda text: BeautifulSoup(text, 'xml')
+)
+results = amazon.ItemLookup(ItemId="0198596790", ResponseGroup="SalesRank")
+
+print(results.find('SalesRank').string)
+# 168088
+```
+
+## Throttling/Batch Mode
+
+Amazon strictly limits the query rate on its API (by default, one query
+per second per associate tag). If you have a batch of non-urgent queries, you
+can use the `MaxQPS` argument to limit them to no more than a certain rate;
+any faster, and bottlenose will `sleep()` until it is time to make the next
+API call.
+
+Generally, you want to be just under the query limit, for example:
+
+```python
+amazon = bottlenose.Amazon(MaxQPS=0.9)
+```
+
+If some other code is also querying the API with your associate tag (for
+example, a website backend), you'll want to choose an even lower value
+for MaxQPS.
+
+## Caching
+
+You can often get a major speedup by caching API queries. Use the `CacheWriter`
+and `CacheReader` constructor arguments.
+
+`CacheWriter` is a callable that takes two arguments, a cache url, and the
+raw response (a bytestring). It will only be called after successful queries.
+
+`CacheReader` is a callable that takes a single argument, a cache url, and
+returns a (cached) raw response, or `None` if there is nothing cached.
+
+The cache url is the actual query URL with authentication information removed.
+For example:
+
+    http://webservices.amazon.com/onca/xml?Keywords=vacuums&Operation=ItemSearch&Region=US&ResponseGroup=SearchBins&SearchIndex=All&Service=AWSECommerceService&Version=2013-08-01
+
+Example code:
+
+```python
+def write_query_to_db(cache_url, data):
+    ...
+
+def read_query_from_db(cache_url):
+    ...
+
+amazon = bottlenose.Amazon(CacheWriter=write_query_to_db,
+                           CacheReader=read_query_from_db)
+```
+
+Note that Amazon's [Product Advertising API Agreement](https://affiliate-program.amazon.com/gp/advertising/api/detail/agreement.html)
+only allows you to cache queries for up to 24 hours.
+
+## Error Handling
+
+Sometimes the Amazon API returns errors; for example, if you have gone over
+your query limit, you'll get a 503. The `ErrorHandler` constructor argument
+gives you a way to keep track of such errors, and to retry queries when you
+receive a transient error.
+
+`ErrorHandler` should be a callable that takes a single argument, a dictionary
+with these keys:
+
+ * api_url: the actual URL used to call the API
+ * cache_url: `api_url` minus authentication information
+ * exception: the exception raised (usually an `HTTPError` or `URLError`)
+
+If your `ErrorHandler` returns true, the query will be retried. Here's some
+example code that does exponential backoff after throttling:
+
+```python
+import random
+import time
+from urllib2 import HTTPError
+
+def error_handler(err):
+    ex = err['exception']
+    if isinstance(ex, HTTPError) and ex.code == 503:
+        time.sleep(random.expovariate(0.1))
+        return True
+
+amazon = bottlenose.Amazon(ErrorHandler=error_handler)
+```
 
 ## License
 
-Disclaimer: Everything you see here is open and free to use as long as you comply with the [license](https://github.com/mirumee/saleor/blob/master/LICENSE). There are no hidden charges. We promise to do our best to fix bugs and improve the code.
-
-Some situations do call for extra code; we can cover exotic use cases or build you a custom e-commerce appliance.
-
-#### Crafted with ❤️ by [Mirumee Software](http://mirumee.com)
-
-hello@mirumee.com
+Apache License, Version 2.0. See [LICENSE](LICENSE) for details.

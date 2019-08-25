@@ -217,7 +217,7 @@
       "is_published": true,
       "seo_title": "Book 1 Title",
       "seo_description": "Book 1 Description",
-      "product_type": 5,
+      "product_type": 2,
       "name": "Book 1 Title",
       "description": "Book 1 Description",
       "description_json": {
@@ -251,7 +251,7 @@
       "is_published": true,
       "seo_title": "Book 2 Title",
       "seo_description": "Book 2 Description",
-      "product_type": 5,
+      "product_type": 2,
       "name": "Book 2 Title",
       "description": "Book 2 Description",
       "description_json": {

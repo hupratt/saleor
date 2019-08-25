@@ -5,13 +5,15 @@ from django.core.files import File
 from saleor.product.thumbnails import create_product_thumbnails
 from sqlite3 import Error
 
+"""
+improvements:
+crawl aws for pics
+get description, language, author from isbn
+"""
 
 def get_image(image_dir, image_name):
     image_dir = "/home/hugo/Development/saleor/saleor/static/placeholders"
     img_path = os.path.join(image_dir, image_name)
-    print(image_dir)
-    print(image_name)
-    print("os.path.isfile(img_path)", os.path.isfile(img_path))
     if os.path.isfile(img_path):
         return File(open(img_path, "rb"), name=image_name)
     return False
@@ -70,18 +72,11 @@ def select_all_books(conn):
     cur.execute("SELECT titre, isbn, prix FROM livre")
  
     rows = cur.fetchall()
-    # name = "Um Museu do Outro Mundo"
-    # price = '10.00'
-    # image_name = "saleordemoproduct_paints_01.png"
-    # image_name ="Um Museu do Outro Mundo.jpg"
-    # image_name = "Paula Rego.jpg"
     image_dir = "saleor/static/placeholders/"
-    # isbn = '0553283685'
     # 1 for English attr = {"1": ["1"]}
     # 2 for Portuguese attr = {"1": ["2"]}
     attr = {"1": ["2"]}
     weight = "0.1"
-    # pk = 1
     quantity = 1
     for counter, row in enumerate(rows):
         name, isbn, price = row
@@ -89,12 +84,10 @@ def select_all_books(conn):
         price = price.replace(",",'.')
         image_name = name + '.jpg'
         pk = counter + 1
-        isbn = '9789897416361'
         get_book_cover_google_url(name = name, isbn = isbn)
         create_product(name = name, price = price, weight = weight, 
                image_name = image_name, image_dir = image_dir, 
                isbn = isbn, attr = attr, pk = pk, quantity = quantity)
-        break
 
 database = "/home/hugo/Downloads/LPP-Master_2019_2019-06-30.db"
 

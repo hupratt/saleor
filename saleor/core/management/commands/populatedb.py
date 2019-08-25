@@ -87,6 +87,7 @@ class Command(BaseCommand):
         with connection.cursor() as cursor:
             cursor.execute(commands.getvalue())
 
+
     def handle(self, *args, **options):
         self.make_database_faster()
         create_images = not options["withoutimages"]
