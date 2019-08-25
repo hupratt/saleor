@@ -59,15 +59,9 @@ local_file = '/home/hugo/Development/saleor/saleor/static/placeholders/978989626
 if bucket == 'does not exist':
     s3_resource = boto3.resource('s3', aws_access_key_id=os.environ.get('S3_ACCESS_KEY'), aws_secret_access_key=os.environ.get('S3_SECRET_KEY'))
     first_bucket_name, first_response = create_bucket(bucket_prefix=YOUR_BUCKET_NAME, s3_connection=s3_resource.meta.client)
-    first_file_name = create_temp_file(300, 'firstfile.txt', 'f')   
-    first_object = s3_resource.Object(bucket_name=first_bucket_name, key=first_file_name)
-    first_object.upload_file(first_file_name)
-    uploaded = upload_to_aws(local_file, bucket, 'image_0.jpg')
+    uploaded = upload_to_aws(local_file, YOUR_BUCKET_NAME, 'image_0.jpg')
 
 else:
-    first_file_name = create_temp_file(300, 'firstfile.txt', 'f')   
-    first_object = bucket.Object(bucket_name=YOUR_BUCKET_NAME, key=first_file_name)
-    first_object.upload_file(first_file_name)
     uploaded = upload_to_aws(local_file, YOUR_BUCKET_NAME, 'image_0.jpg')
 
 
