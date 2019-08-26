@@ -89,7 +89,7 @@ def ship_to_s3(directory):
 
 # main functions
 
-def google_it(placeholders):
+def google_it(placeholders, conn):
     isbn = select_all_books(conn)
     google = google_images_download.googleimagesdownload()
     
@@ -140,7 +140,7 @@ def main():
     conn = create_connection(DATABASE)
     conn.text_factory = lambda x: str(x, 'latin1')
     with conn:
-        google_it(PLACHOLDERS)
+        google_it(PLACHOLDERS, conn)
         # store_it(YOUR_BUCKET_NAME, PLACHOLDERS)
         rename(PLACHOLDERS)
 
