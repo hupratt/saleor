@@ -130,8 +130,10 @@ def rename(placeholders):
             os.rename(os.path.join(placeholders, isbn, filename + file_extension), os.path.join(placeholders, isbn, isbn + file_extension)) 
 
 def main():
-    DATABASE = "/home/hugo/Downloads/LPP-Master_2019_2019-06-30.db"
-    PLACHOLDERS = "/home/hugo/Development/saleor/saleor/static/placeholders"
+    # DATABASE = "/home/hugo/Downloads/LPP-Master_2019_2019-06-30.db"
+    DATABASE = "/home/ubuntu/Dev/LPP-Master_2019_2019-06-30.db"
+    # PLACHOLDERS = "/home/hugo/Development/saleor/saleor/static/placeholders"
+    PLACHOLDERS = "/home/ubuntu/Dev/saleor/saleor/static/placeholders"
     YOUR_BUCKET_NAME = "lppimagerepo-f1492f08-f236-4a55-afb7-70ded209cb24"
 
     # create a database connection
@@ -139,7 +141,7 @@ def main():
     conn.text_factory = lambda x: str(x, 'latin1')
     with conn:
         google_it(PLACHOLDERS)
-        store_it(YOUR_BUCKET_NAME, PLACHOLDERS)
+        # store_it(YOUR_BUCKET_NAME, PLACHOLDERS)
         rename(PLACHOLDERS)
 
 
