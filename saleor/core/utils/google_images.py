@@ -127,8 +127,10 @@ def rename(placeholders):
             if file_extension not in [".jpg", ".gif", ".png", ".bmp", ".svg", ".webp", ".ico"]:
                 filename = img[0]
                 file_extension = filename[-4:]
-            os.rename(os.path.join(placeholders, isbn, filename + file_extension), os.path.join(placeholders, isbn, isbn + file_extension)) 
-
+            try:
+                os.rename(os.path.join(placeholders, isbn, filename + file_extension), os.path.join(placeholders, isbn, isbn + file_extension)) 
+            except FileNotFoundError:
+                pass
 def main():
     # DATABASE = "/home/hugo/Downloads/LPP-Master_2019_2019-06-30.db"
     DATABASE = "/home/ubuntu/Dev/LPP-Master_2019_2019-06-30.db"
