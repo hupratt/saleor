@@ -1,0 +1,227 @@
+[
+    {
+      "model": "product.category",
+      "pk": 1,
+      "fields": {
+        "seo_title": "",
+        "seo_description": "",
+        "name": "Accessories",
+        "slug": "accessories",
+        "description": "",
+        "description_json": {
+          "blocks": [
+            {
+              "key": "",
+              "data": {},
+              "text": "",
+              "type": "unstyled",
+              "depth": 0,
+              "entityRanges": [],
+              "inlineStyleRanges": []
+            }
+          ],
+          "entityMap": {}
+        },
+        "parent": null,
+        "background_image": "category-backgrounds/accessories.jpg",
+        "background_image_alt": "",
+        "lft": 1,
+        "rght": 2,
+        "tree_id": 1,
+        "level": 0
+      }
+    },
+    {
+      "model": "product.producttype",
+      "pk": 1,
+      "fields": {
+        "name": "Paint",
+        "has_variants": true,
+        "is_shipping_required": true,
+        "meta": {"taxes":{"vatlayer": {"code": "standard", "description": ""}}},
+        "weight": "1.0 kg"
+      }
+    },
+  
+    {
+      "model": "product.product",
+      "pk": 1,
+      "fields": {
+        "publication_date": null,
+        "is_published": true,
+        "seo_title": "",
+        "seo_description": "Tonight, my love, let us take fat brushes and paint the skies with the shades of nebula tides. Get the dark, moody shades of the ether.",
+        "product_type": 1,
+        "name": "Nebula Night Sky Paint",
+        "description": "Tonight, my love, let us take fat brushes and paint the skies with the shades of nebula tides. Get the dark, moody shades of the ether.",
+        "description_json": {
+          "blocks": [
+            {
+              "key": "",
+              "data": {},
+              "text": "Tonight, my love, let us take fat brushes and paint the skies with the shades of nebula tides. Get the dark, moody shades of the ether.",
+              "type": "unstyled",
+              "depth": 0,
+              "entityRanges": [],
+              "inlineStyleRanges": []
+            }
+          ],
+          "entityMap": {}
+        },
+        "category": 1,
+        "price": { "_type": "Money", "amount": "15.00", "currency": "EUR" },
+        "attributes": "{}",
+        "updated_at": "2019-03-06T12:47:35.666Z",
+        "charge_taxes": true,
+        "meta": {"taxes":{"vatlayer": {"code": "standard", "description": ""}}},
+        "weight": "0.0 kg"
+      }
+    },
+ 
+    {
+      "model": "product.productvariant",
+      "pk": 1,
+      "fields": {
+        "sku": "45507483",
+        "name": "XXL",
+        "price_override": null,
+        "product": 1,
+        "attributes": "{\"1\": [\"1\"]}",
+        "track_inventory": true,
+        "quantity": 5818,
+        "quantity_allocated": 27,
+        "cost_price": { "_type": "Money", "amount": "10.00", "currency": "EUR" },
+        "weight": "0.0 kg"
+      }
+    },
+    {
+      "model": "product.attribute",
+      "pk": 1,
+      "fields": {
+        "slug": "size",
+        "name": "Size",
+        "product_type": null,
+        "product_variant_type": 1
+      }
+    },
+ 
+    {
+      "model": "product.attributevalue",
+      "pk": 1,
+      "fields": {
+        "sort_order": 1,
+        "name": "XXL",
+        "value": "",
+        "slug": "xxl",
+        "attribute": 1
+      }
+    },
+    {
+        "model": "product.productimage",
+        "pk": 1,
+        "fields": {
+          "sort_order": 0,
+          "product": 87,
+          "image": "products/saleordemoproduct_sneakers_01_1.png",
+          "ppoi": "0.5x0.5",
+          "alt": ""
+        }
+    },
+    
+    {
+    "model": "product.productimage",
+    "pk": 2,
+    "fields": {
+        "sort_order": 0,
+        "product": 87,
+        "image": "products/saleordemoproduct_sneakers_01_2.png",
+        "ppoi": "0.5x0.5",
+        "alt": ""
+        }
+    },
+
+    {
+        "model": "product.productimage",
+        "pk": 3,
+        "fields": {
+          "sort_order": 0,
+          "product": 87,
+          "image": "products/saleordemoproduct_sneakers_01_3.png",
+          "ppoi": "0.5x0.5",
+          "alt": ""
+        }
+    },
+    
+    {
+    "model": "product.productimage",
+    "pk":4,
+    "fields": {
+        "sort_order": 0,
+        "product": 87,
+        "image": "products/saleordemoproduct_sneakers_01_4.png",
+        "ppoi": "0.5x0.5",
+        "alt": ""
+        }
+    },
+
+    {
+        "model": "product.collection",
+        "pk": 1,
+        "fields": {
+          "publication_date": null,
+          "is_published": true,
+          "seo_title": null,
+          "seo_description": null,
+          "name": "Summer collection",
+          "slug": "summer-collection",
+          "background_image": "collection-backgrounds/summer_O96Ivuv.jpg",
+          "background_image_alt": "",
+          "description": "The Saleor Summer Collection features a range of products that feel the heat of the market. A demo store for all seasons. Saleor captures the open source, e-commerce sun.",
+          "description_json": {
+            "blocks": [
+              {
+                "key": "",
+                "data": {},
+                "text": "The Saleor Summer Collection features a range of products that feel the heat of the market. A demo store for all seasons. Saleor captures the open source, e-commerce sun.",
+                "type": "unstyled",
+                "depth": 0,
+                "entityRanges": [],
+                "inlineStyleRanges": []
+              }
+            ],
+            "entityMap": {}
+          },
+          "products": [1]
+        }
+      },
+      {
+        "model": "product.collection",
+        "pk": 2,
+        "fields": {
+          "publication_date": null,
+          "is_published": true,
+          "seo_title": null,
+          "seo_description": null,
+          "name": "Winter sale",
+          "slug": "winter-sale",
+          "background_image": "collection-backgrounds/clothing_TuZmZFT.jpg",
+          "background_image_alt": "",
+          "description": "The Saleor Winter Sale is snowed under with seasonal offers. Unreal products at unreal prices. Literally, they are not real products, but the Saleor demo store is a genuine e-commerce leader.",
+          "description_json": {
+            "blocks": [
+              {
+                "key": "",
+                "data": {},
+                "text": "The Saleor Winter Sale is snowed under with seasonal offers. Unreal products at unreal prices. Literally, they are not real products, but the Saleor demo store is a genuine e-commerce leader.",
+                "type": "unstyled",
+                "depth": 0,
+                "entityRanges": [],
+                "inlineStyleRanges": []
+              }
+            ],
+            "entityMap": {}
+          },
+          "products": [1]
+        }
+      }
+  ]

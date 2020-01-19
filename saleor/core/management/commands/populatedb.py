@@ -22,6 +22,7 @@ from ...utils.random_data import (
 )
 
 
+
 class Command(BaseCommand):
     help = "Populate database with test objects"
     placeholders_dir = "saleor/static/placeholders/"

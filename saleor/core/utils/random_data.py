@@ -184,7 +184,7 @@ def create_attributes_values(values_data):
         AttributeValue.objects.update_or_create(pk=pk, defaults=defaults)
 
 
-def create_products(products_data, placeholder_dir):
+def create_products(products_data, placeholder_dir, create_images):
     for product in products_data:
         pk = product["pk"]
         # print("product",product)
@@ -213,7 +213,7 @@ def create_product_variants(variants_data):
         pk = variant["pk"]
         defaults = variant["fields"]
         defaults["weight"] = get_weight(defaults["weight"])
-        # product_id = defaults.pop("product")
+        product_id = defaults.pop("product")
         # # We have not created products without images
         # if product_id not in IMAGES_MAPPING:
         #     continue
@@ -230,13 +230,15 @@ def create_product_variants(variants_data):
 
 def get_in_default_currency(defaults, field, currency):
     if field in defaults and defaults[field] is not None:
-        return Money(defaults[field]['amount'], currency)
+        # return Money(defaults[field]['amount'], currency)
+        return defaults[field]
     return None
+
 
 
 def create_products_by_schema(placeholder_dir, create_images):
     path = os.path.join(
-        settings.PROJECT_ROOT, "saleor", "static", "populate.json"
+        settings.PROJECT_ROOT, "saleor", "static", "populatedb_data.json"
     )
     with open(path) as f:
         db_items = json.load(f, object_hook=object_hook)
@@ -254,13 +256,13 @@ def create_products_by_schema(placeholder_dir, create_images):
     create_attributes_values(values_data=types["product.attributevalue"])
     create_products(
         products_data=types["product.product"],
-        placeholder_dir=placeholder_dir
-        # create_images=create_images,
+        placeholder_dir=placeholder_dir,
+        create_images=create_images,
     )
     create_product_variants(variants_data=types["product.productvariant"])
-    # create_collections(
-    #     data=types["product.collection"], placeholder_dir=placeholder_dir
-    # )
+    create_collections(
+        data=types["product.collection"], placeholder_dir=placeholder_dir
+    )
 
 
 class SaleorProvider(BaseProvider):
@@ -990,15 +992,15 @@ def create_menus():
         name=settings.DEFAULT_MENUS["bottom_menu_name"]
     )
     bottom_menu.items.all().delete()
-    # collection = Collection.objects.filter(products__isnull=False).order_by("?")[0]
-    # item, _ = bottom_menu.items.get_or_create(name="Collections", collection=collection)
+    collection = Collection.objects.filter(products__isnull=False).order_by("?")[0]
+    item, _ = bottom_menu.items.get_or_create(name="Collections", collection=collection)
 
-    # for collection in Collection.objects.filter(
-    #     products__isnull=False, background_image__isnull=False
-    # ):
-    #     bottom_menu.items.get_or_create(
-    #         name=collection.name, collection=collection, parent=item
-    #     )
+    for collection in Collection.objects.filter(
+        products__isnull=False, background_image__isnull=False
+    ):
+        bottom_menu.items.get_or_create(
+            name=collection.name, collection=collection, parent=item
+        )
 
     page = Page.objects.order_by("?")[0]
     bottom_menu.items.get_or_create(name=page.title, page=page)

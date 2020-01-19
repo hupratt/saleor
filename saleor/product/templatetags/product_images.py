@@ -9,7 +9,6 @@ from django.templatetags.static import static
 logger = logging.getLogger(__name__)
 register = template.Library()
 
-
 # cache available sizes at module level
 def get_available_sizes():
     rendition_sizes = {}

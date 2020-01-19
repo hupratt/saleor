@@ -118,6 +118,7 @@ def store_it(bucket_name, placeholders):
             if len(image_path) > 0:
                 upload_to_aws(image_path, bucket_name, isbn + '.jpg')
 
+
 def rename(placeholders):
     _dir = [i for i in os.listdir(placeholders) if os.path.isdir(os.path.join(placeholders, i))]
     for isbn in _dir:
