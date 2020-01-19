@@ -37,7 +37,6 @@ for (x in labels) {
 					. bin/activate
 					echo 'which python are you running?'
 					which python
-					cd src
 
 					sudo $PYTHON_P -m pip install --upgrade pip # Upgrade pip
 					echo 'pip upgrade done'
@@ -48,9 +47,9 @@ for (x in labels) {
 
 					# sudo $PYTHON_P manage.py createcachetable cache_table
 
-					#$PYTHON_P manage.py makemigrations                  
+					$PYTHON_P manage.py makemigrations                  
 
-					#$PYTHON_P manage.py migrate                  
+					$PYTHON_P manage.py migrate                  
 					echo 'manage.py migrate done'
 
 					sudo $PYTHON_P manage.py compilemessages --settings=la_petite_portugaise.settings 
